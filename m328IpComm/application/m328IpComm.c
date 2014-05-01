@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 #include "m328IpComm.h"
 #include "../drivers/drivers.h"
@@ -54,7 +55,8 @@ int main(void)
 		
     while(1)
     {
-		USART_Transmit(0x32);
+		//USART_Transmit(0x32);
+		printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 		plen=enc28j60PacketReceive(BUFFER_SIZE, buf);
 		buf[BUFFER_SIZE]='\0'; // http is an ascii protocol. Make sure we have a string terminator.
 		// DHCP renew IP:
@@ -100,6 +102,9 @@ UDP:
 	
 			strcpy(str,"Sensolight! usage: ver");
 			make_udp_reply_from_request(buf,str,strnlen(str,35),MYUDPPORT);
+			
+		//	strcpy(str,&buf[UDP_DATA_P]);
+		//	USART_print(str);
 		}				
 		
 		

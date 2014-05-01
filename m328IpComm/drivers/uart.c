@@ -7,6 +7,22 @@
 #include "drivers.h"
 #include <avr/interrupt.h>
 #include <string.h>
+#include <stdio.h>
+
+/********************************************************************************
+Function Prototypes
+********************************************************************************/
+char usart_getchar( void );
+void usart_putchar( char data );
+void usart_pstr (char *s);
+unsigned char usart_kbhit(void);
+int usart_putchar_printf(char var, FILE *stream);
+
+/********************************************************************************
+Global Variables
+********************************************************************************/
+static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
+
 
 /*-------------------- Init_Uart      -------------------------
 *    Function:    Init_Uart
@@ -26,6 +42,9 @@ void Init_Uart(void){
 	// 115200 Baudrate @ 0.9216 Mhz
 	UBRR0L = 0x35; //9600 @ 12.5 Mhz
 	sei();
+	
+	// setup our stdio stream
+	stdout = &mystdout;
 }
 
 /*-------------------- USART_Transmit   -------------------------
@@ -46,7 +65,20 @@ void USART_Transmit(uint8_t data){
 	while(!(UCSR0A & (1<<UDRE0)));  // Make sure that the data register is empty before putting the device to sleep
 	;
 }
-
+// Needed by printf
+void usart_putchar(char data) {
+	// Wait for empty transmit buffer
+	while(!(UCSR0A & (1<<UDRE0)));
+	// Start transmission
+	UDR0 = data;
+}
+void usart_pstr(char *s) {
+	// loop through entire string
+	while (*s) {
+		usart_putchar(*s);
+		s++;
+	}
+}
 /*-------------------- USART_Receive   -------------------------
 *    Function:    USART_Receive
 *    Purpose:    Receive a byte from UART.
@@ -64,6 +96,21 @@ uint8_t USART_Receive(uint8_t * data)
 		return 1;
 	}else
 	return 0;
+}
+
+// Needed by printf
+char usart_getchar(void) {
+	// Wait for incoming data
+	while (!(UCSR0A & (1<<RXC0)));
+	// Return the data
+	return UDR0;
+}
+unsigned char usart_kbhit(void) {
+	//return nonzero if char waiting polled version
+	unsigned char b;
+	b=0;
+	if(UCSR0A & (1<<RXC0)) b=1;
+	return b;
 }
 
 /*-------------------- USART_print   -------------------------
@@ -85,3 +132,12 @@ void USART_print(char * text){
 	USART_Transmit(0x0D);
 	USART_Transmit(0x0A);
 }
+// needed by printf
+int usart_putchar_printf(char var, FILE *stream) {
+	// translate \n to \r for br@y++ terminal
+	if (var == '\n') usart_putchar('\r');
+	usart_putchar(var);
+	return 0;
+}
+
+
