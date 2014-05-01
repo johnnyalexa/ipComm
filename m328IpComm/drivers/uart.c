@@ -17,11 +17,18 @@ void usart_putchar( char data );
 void usart_pstr (char *s);
 unsigned char usart_kbhit(void);
 int usart_putchar_printf(char var, FILE *stream);
+int usart_getchar_scanf(FILE *stream);
 
 /********************************************************************************
 Global Variables
 ********************************************************************************/
-static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
+
+/*
+*
+*	Set the standard I/O stream to be used in the project
+*
+*/
+static FILE mystdio = FDEV_SETUP_STREAM(usart_putchar_printf, usart_getchar_scanf, _FDEV_SETUP_RW);
 
 
 /*-------------------- Init_Uart      -------------------------
@@ -44,7 +51,7 @@ void Init_Uart(void){
 	sei();
 	
 	// setup our stdio stream
-	stdout = &mystdout;
+	stdin=stdout= &mystdio;
 }
 
 /*-------------------- USART_Transmit   -------------------------
@@ -65,13 +72,30 @@ void USART_Transmit(uint8_t data){
 	while(!(UCSR0A & (1<<UDRE0)));  // Make sure that the data register is empty before putting the device to sleep
 	;
 }
-// Needed by printf
+
+/*-------------------- usart_putchar   -------------------------
+*    Function:    usart_putchar
+*    Purpose:    Transmit a byte through UART.
+*
+*    Parameters:
+*        data - data to be sent
+*    Returns: none
+*------------------------------------------------------------*/
 void usart_putchar(char data) {
 	// Wait for empty transmit buffer
 	while(!(UCSR0A & (1<<UDRE0)));
 	// Start transmission
 	UDR0 = data;
 }
+
+/*-------------------- usart_pstr   -------------------------
+*    Function:    usart_pstr
+*    Purpose:    Transmit a string through UART.
+*
+*    Parameters:
+*        s - Pointer to the data to be sent
+*    Returns: none
+*------------------------------------------------------------*/
 void usart_pstr(char *s) {
 	// loop through entire string
 	while (*s) {
@@ -79,6 +103,7 @@ void usart_pstr(char *s) {
 		s++;
 	}
 }
+
 /*-------------------- USART_Receive   -------------------------
 *    Function:    USART_Receive
 *    Purpose:    Receive a byte from UART.
@@ -98,19 +123,59 @@ uint8_t USART_Receive(uint8_t * data)
 	return 0;
 }
 
-// Needed by printf
+/*-------------------- usart_getchar   -------------------------
+*    Function:    usart_getchar
+*    Purpose:    Receive a byte from UART.
+*
+*    Parameters:
+*        none
+*    Returns: data byte receiver through UART
+*------------------------------------------------------------*/
 char usart_getchar(void) {
 	// Wait for incoming data
 	while (!(UCSR0A & (1<<RXC0)));
 	// Return the data
 	return UDR0;
 }
+
+/*-------------------- usart_kbhit   -------------------------
+*    Function:    usart_kbhit
+*    Purpose:    Tell if a character is waiting to be read on UART.
+*
+*    Parameters:
+*        none
+*    Returns: 
+*		1 - Character is waiting to be read
+*		0 - no data is waiting on UART
+*------------------------------------------------------------*/
 unsigned char usart_kbhit(void) {
 	//return nonzero if char waiting polled version
 	unsigned char b;
 	b=0;
 	if(UCSR0A & (1<<RXC0)) b=1;
 	return b;
+}
+
+
+/*-------------------- usart_getchar_scanf   -------------------------
+*    Function:    usart_getchar_scanf
+*    Purpose:    Reads a character on the UART.
+*				- each character read is echoed back
+*    Parameters:
+*        I/O Stream
+*    Returns:
+*		The character data from the UART RX
+*------------------------------------------------------------*/
+int usart_getchar_scanf(FILE *stream)
+{
+	uint8_t u8Data;
+	// Wait for byte to be received
+	while(!(UCSR0A&(1<<RXC0))){};
+	u8Data=UDR0;
+	//echo input data
+	usart_putchar_printf(u8Data,stream);
+	// Return received data
+	return (int)u8Data;
 }
 
 /*-------------------- USART_print   -------------------------
@@ -132,7 +197,18 @@ void USART_print(char * text){
 	USART_Transmit(0x0D);
 	USART_Transmit(0x0A);
 }
-// needed by printf
+
+
+/*-------------------- usart_putchar_printf   -------------------------
+*    Function:    usart_putchar_printf
+*    Purpose:    Sends a character through a stream.
+*
+*    Parameters:
+*        var - character to be transmited
+*		stream - pointer to the I/O stream
+*    Returns: 
+*		0 - always error free
+*------------------------------------------------------------*/
 int usart_putchar_printf(char var, FILE *stream) {
 	// translate \n to \r for br@y++ terminal
 	if (var == '\n') usart_putchar('\r');

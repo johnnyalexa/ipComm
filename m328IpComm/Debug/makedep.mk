@@ -16,6 +16,8 @@ drivers\timer.c
 
 drivers\uart.c
 
+drivers\WDG.c
+
 enc28j60_tcp_ip_stack\dhcp_client.c
 
 enc28j60_tcp_ip_stack\dnslkup.c

@@ -139,6 +139,9 @@
     <Compile Include="drivers\uart.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="drivers\WDG.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="enc28j60_tcp_ip_stack\dhcp_client.c">
       <SubType>compile</SubType>
     </Compile>

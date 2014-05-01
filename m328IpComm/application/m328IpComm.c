@@ -21,7 +21,6 @@
 
 int main(void)
 {
-	
 	uint16_t dat_p,plen;
 	uint8_t payloadlen=0;
 	char str[20];
@@ -31,18 +30,15 @@ int main(void)
 				
 	//Init specific controller peripherals
 	MCU_Init();
-	
-
 	plen = Get_DHCP_Config();
-//	while(1){
-	//	USART_Transmit(0x31);
-//	}
+
 	
 	while(get_mac_with_arp_wait()){
 		// to process the ARP reply we must call the packetloop
 		plen=enc28j60PacketReceive(BUFFER_SIZE, buf);
 		packetloop_arp_icmp_tcp(buf,plen);
 	}
+
 
 #if 0 //ramane daca vrem dns
 	if (string_is_ipv4(WEBSERVER_VHOST)){
@@ -52,11 +48,16 @@ int main(void)
 		processing_state=2; // no need to do any dns look-up
 	}
 #endif
-		
+
+printf("Enter your response here:\n");
+scanf("%s",str);
+
+
+// Main loop of the program		
     while(1)
     {
 		//USART_Transmit(0x32);
-		printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
+//		printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 		plen=enc28j60PacketReceive(BUFFER_SIZE, buf);
 		buf[BUFFER_SIZE]='\0'; // http is an ascii protocol. Make sure we have a string terminator.
 		// DHCP renew IP:
@@ -99,17 +100,21 @@ UDP:
 		buf[UDP_DST_PORT_L_P] == (MYUDPPORT&0xff)) {
 			payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
 			// you must sent a string starting with v
-	
-			strcpy(str,"Sensolight! usage: ver");
+			
+			printf("Enter your response here:\n");
+			scanf("%s",str);
+		//	printf("%s",str);
+			//strcpy(str,"Sensolight! usage: ver");
 			make_udp_reply_from_request(buf,str,strnlen(str,35),MYUDPPORT);
 			
 		//	strcpy(str,&buf[UDP_DATA_P]);
 		//	USART_print(str);
 		}				
 		
-		
-		
-    }
+    } // End of main loop
+	
+// If we get here, we need to restart
+Reset_AVR();	
 	
 	return (0);
 }

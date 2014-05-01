@@ -10,6 +10,9 @@
 #define DRIVERS_H_
 
 #include <avr/io.h>
+#include <avr/wdt.h>
+// Reset AVR using watchdog
+#define Reset_AVR() wdt_enable(WDTO_500MS); while(1) {}
 
 void timer_init(void);
 void Ethernet_Init(void);

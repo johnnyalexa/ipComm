@@ -6,7 +6,7 @@
  */ 
 #include "m328IpComm.h"
 #include "../enc28j60_tcp_ip_stack/include/timeout.h"
-
+#include <avr/wdt.h>
 
 //
 // Please modify the following lines. mac and ip have to be unique

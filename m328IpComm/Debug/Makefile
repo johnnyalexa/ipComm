@@ -47,6 +47,7 @@ C_SRCS +=  \
 ../drivers/SPI.c \
 ../drivers/timer.c \
 ../drivers/uart.c \
+../drivers/WDG.c \
 ../enc28j60_tcp_ip_stack/dhcp_client.c \
 ../enc28j60_tcp_ip_stack/dnslkup.c \
 ../enc28j60_tcp_ip_stack/enc28j60.c \
@@ -68,6 +69,7 @@ drivers/NVM.o \
 drivers/SPI.o \
 drivers/timer.o \
 drivers/uart.o \
+drivers/WDG.o \
 enc28j60_tcp_ip_stack/dhcp_client.o \
 enc28j60_tcp_ip_stack/dnslkup.o \
 enc28j60_tcp_ip_stack/enc28j60.o \
@@ -82,6 +84,7 @@ drivers/NVM.o \
 drivers/SPI.o \
 drivers/timer.o \
 drivers/uart.o \
+drivers/WDG.o \
 enc28j60_tcp_ip_stack/dhcp_client.o \
 enc28j60_tcp_ip_stack/dnslkup.o \
 enc28j60_tcp_ip_stack/enc28j60.o \
@@ -96,6 +99,7 @@ drivers/NVM.d \
 drivers/SPI.d \
 drivers/timer.d \
 drivers/uart.d \
+drivers/WDG.d \
 enc28j60_tcp_ip_stack/dhcp_client.d \
 enc28j60_tcp_ip_stack/dnslkup.d \
 enc28j60_tcp_ip_stack/enc28j60.d \
@@ -110,6 +114,7 @@ drivers/NVM.d \
 drivers/SPI.d \
 drivers/timer.d \
 drivers/uart.d \
+drivers/WDG.d \
 enc28j60_tcp_ip_stack/dhcp_client.d \
 enc28j60_tcp_ip_stack/dnslkup.d \
 enc28j60_tcp_ip_stack/enc28j60.d \
@@ -127,6 +132,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 
