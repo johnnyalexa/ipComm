@@ -5,3 +5,74 @@
  *  Author: John
  */ 
 #include "drivers.h"
+#include "../application/m328IpComm.h"
+#include <avr/eeprom.h>
+
+
+#define EEPROM_START       0u
+#define EEPROM_LEN		1024ul
+
+#define CONFIG_LEN		sizeof(ipComm_config_t)
+#define EEPROM_LOOP		(EEPROM_LEN/CONFIG_LEN)
+
+#define STATUS_START_ADDRESS (CONFIG_LEN - 2)
+#define FIRST_USE_LOCATION 1
+
+/* Shows current buffer position */
+static uint8_t ConfigIndex;
+static uint8_t StatusBufferValue;
+
+uint8_t get_loop(void){
+	
+	return EEPROM_LOOP;
+}
+
+
+/*-------------------- EEPROM_GetCurrentPosition   -------------------------
+*    Function:    EEPROM_GetCurrentPosition
+*    Purpose:    Loads Current position in EEPROM.
+*
+*    Parameters: none
+*    Returns: none
+*------------------------------------------------------------*/
+uint8_t NVM_GetCurrentPosition(void){
+	uint8_t U8_value1,U8_value2;
+	uint8_t U8_position;
+	
+	//Read first status byte	
+	U8_value1 = eeprom_read_byte((const uint8_t *)STATUS_START_ADDRESS);
+	
+	for(U8_position=0;U8_position<EEPROM_LOOP-1;U8_position++){
+		//Read next status byte
+		U8_value2 = eeprom_read_byte((const uint8_t *)(STATUS_START_ADDRESS + ((U8_position+1)*CONFIG_LEN)));
+		//If next status byte is current status byte incremented	
+		if(U8_value2 == (uint8_t)(U8_value1+1)){
+				//Change the values and continue the loop
+				U8_value1 = U8_value2;
+				continue;
+			}else{
+				ConfigIndex = U8_position;
+				StatusBufferValue = U8_value1;
+				break;
+			}
+		}
+	return U8_position;	
+}
+
+static void IncrementLocation(void){
+	ConfigIndex ++;
+	if(ConfigIndex >= EEPROM_LOOP)
+		ConfigIndex = 0;
+	StatusBufferValue = (uint8_t)(StatusBufferValue + 1);		
+}
+
+void NVM_LoadConfig(ipComm_config_t *data){
+	eeprom_read_block(data,(void *)(ConfigIndex*CONFIG_LEN),CONFIG_LEN);
+}
+
+void NVM_SaveConfig(ipComm_config_t *data){
+	//Save the data to a new location
+	IncrementLocation();
+	data->status=StatusBufferValue;
+	eeprom_write_block((uint8_t *)data,(void *)(ConfigIndex*CONFIG_LEN),CONFIG_LEN);
+}

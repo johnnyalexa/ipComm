@@ -9,9 +9,15 @@
 #ifndef M328IPCOMM_H_
 #define M328IPCOMM_H_
 #include "../drivers/drivers.h"
-
 #include "../enc28j60_tcp_ip_stack/include/tcp_ip_stack.h"
 
+typedef struct protocol_config{
+	
+	
+	}protocol_config_t;
+
+
+#define WEBSERVER_VHOST "senso-trafic.no-ip.org"
 
 // packet buffer
 #define BUFFER_SIZE 650

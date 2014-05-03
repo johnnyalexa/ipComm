@@ -15,7 +15,8 @@
 uint8_t mymac[6] = {0x00, 0x52,0x47,0x46,0x10,0x27};
 
 
-uint8_t otherside_www_ip[4]={192,168,0,100}; // dns will fill this
+//uint8_t otherside_www_ip[4]={192,168,0,100}; // dns will fill this
+	uint8_t otherside_www_ip[4]={86,121,130,52}; // dns will fill this
 // My own IP (DHCP will provide a value for it):
 uint8_t myip[4]={0,0,0,0};
 // Default gateway (DHCP will provide a value for it):

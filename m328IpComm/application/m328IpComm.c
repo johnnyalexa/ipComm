@@ -42,17 +42,24 @@ int main(void)
 
 #if 0 //ramane daca vrem dns
 	if (string_is_ipv4(WEBSERVER_VHOST)){
-		// the the webserver_vhost is not a domain name but alreay
+		// the the webserver_vhost is not a domain name but already
 		// an IP address written as sting
 		parse_ip(otherside_www_ip,WEBSERVER_VHOST);
-		processing_state=2; // no need to do any dns look-up
+		//processing_state=2; // no need to do any dns look-up
 	}
 #endif
+	
+	
+//	while(1)
+	//	printf("loop:%d\n",NVM_GetCurrentPosition());
+	//	printf("size = %d\n",sizeof(ipComm_config_t));
+	
+	//while(1)
+		//printf("My IP=%d.%d.%d.%d\n",otherside_www_ip[0],otherside_www_ip[1],otherside_www_ip[2],otherside_www_ip[3]);
+	
+	
 
-printf("Enter your response here:\n");
-scanf("%s",str);
-
-
+printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 // Main loop of the program		
     while(1)
     {
@@ -63,6 +70,15 @@ scanf("%s",str);
 		// DHCP renew IP:
 		plen=packetloop_dhcp_renewhandler(buf,plen); // for this to work you have to call dhcp_6sec_tick() every 6 sec
 		dat_p=packetloop_arp_icmp_tcp(buf,plen);
+		
+		
+		if(0 == plen){ //we are idle, process some dns
+			
+			
+			
+			
+		}
+		
 
 #if 1
 //	if(plen==0){
