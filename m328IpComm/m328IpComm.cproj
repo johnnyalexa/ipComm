@@ -121,6 +121,12 @@
     <Compile Include="application\m328IpComm.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="application\webpage_help.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="application\webpage_help.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="application\webserver1.c">
       <SubType>compile</SubType>
     </Compile>

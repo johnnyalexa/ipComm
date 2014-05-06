@@ -6,6 +6,7 @@
  */ 
 #include "ip_config.h"
 #include "m328IpComm.h"
+#include "webpage_help.h"
 #include "../enc28j60_tcp_ip_stack/include/ip_arp_udp_tcp.h"
 #include "../enc28j60_tcp_ip_stack/include/websrv_help_functions.h"
 #include "../enc28j60_tcp_ip_stack/include/net.h"
@@ -14,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <avr/pgmspace.h>
+
 
 
 #define STR_BUFFER_SIZE 30
@@ -86,7 +88,9 @@ uint16_t print_webpage(uint8_t * buf)
 	uint16_t plen;
 	plen=http200ok(buf);
 	
-	char buf2[100];
+	print_page();
+	
+	//char buf2[100];
 	
 	//sprintf(buf2,page1,myip[0],myip[1],myip[2],myip[3]);
 	//plen=fill_tcp_data_p(buf,plen,page1);
@@ -97,8 +101,8 @@ uint16_t print_webpage(uint8_t * buf)
 	// sprintf(gStrbuf, "Value of Pi = %d", 314);
 	
 
-	sprintf(buf2, page2, 314,26);
-	 plen=fill_tcp_data(buf,0,buf2);
+	//sprintf(buf2, page2, 314,26);
+	// plen=fill_tcp_data(buf,0,buf2);
 	//plen=fill_tcp_data_p(buf,plen,page1);
 	/*
 	plen=fill_tcp_data_p(buf,plen,PSTR("<a href=/c>[config]</a> <a href=./>[refresh]</a>"));

@@ -6,6 +6,8 @@ application\CommIpHelp.c
 
 application\m328IpComm.c
 
+application\webpage_help.c
+
 application\webserver1.c
 
 drivers\MCU.c
