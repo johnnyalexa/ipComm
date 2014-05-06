@@ -8,6 +8,13 @@
 #include "../enc28j60_tcp_ip_stack/include/timeout.h"
 #include <avr/wdt.h>
 
+
+/* ***************************************************************** */
+//Default config to use if no other config exists
+//                          x     S    L    F    x    x
+uint8_t default_mac[6] = {0x00, 0x52,0x47,0x46,0x00,0x01};
+uint8_t default_ip[4] = {192,168,0,30};
+/* ***************************************************************** */
 //
 // Please modify the following lines. mac and ip have to be unique
 // in your local area network. You can not have the same numbers in

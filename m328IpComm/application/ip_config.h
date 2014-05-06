@@ -27,7 +27,8 @@
 #define UDP_server
 //#undef UDP_server
 // a web server
-#undef WWW_server
+#define WWW_server
+//#undef WWW_server
 //
 
 // to send out a ping:
@@ -52,7 +53,8 @@
 //------------- functions in websrv_help_functions.c --------------
 //
 // functions to decode cgi-form data:
-#undef FROMDECODE_websrv_help
+//#undef FROMDECODE_websrv_help
+#define FROMDECODE_websrv_help
 
 // function to encode a URL (mostly needed for a web client)
 #define URLENCODE_websrv_help

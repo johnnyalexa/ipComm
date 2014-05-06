@@ -12,7 +12,7 @@
 #include "../enc28j60_tcp_ip_stack/include/tcp_ip_stack.h"
 
 typedef struct protocol_config{
-	
+	uint8_t ip_protocol;
 	
 	}protocol_config_t;
 
@@ -25,6 +25,7 @@ typedef struct protocol_config{
 //// listen port for udp
 #define MYUDPPORT 4601
 #define MYTCPPORT 55056
+#define MYWWWPORT 80
 
 #define TRANS_NUM_GWMAC 1
 #define TRANS_NUM_WEBMAC 2
@@ -50,6 +51,15 @@ uint16_t your_client_tcp_datafill_callback(uint8_t fd);
 void send_tcp_data(void);
 void Ethernet_Leds_Init(void);
 uint16_t Get_DHCP_Config(void);
+
+
+//// webserver 1
+
+uint8_t verify_password(char *str);
+uint16_t http200ok(uint8_t * buf);
+uint16_t print_webpage_config(uint8_t * buf);
+uint16_t print_webpage(uint8_t * buf);
+int8_t analyse_get_url(uint8_t * buf, char *str);
 
 
 #endif /* M328IPCOMM_H_ */

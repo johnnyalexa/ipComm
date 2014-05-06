@@ -14,9 +14,15 @@
 
 #include "m328IpComm.h"
 #include "../drivers/drivers.h"
+#include "../enc28j60_tcp_ip_stack/include/websrv_help_functions.h"
 
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
+
+
+
+static ipComm_config_t eep_config;
+
 
 
 int main(void)
@@ -27,9 +33,14 @@ int main(void)
 	uint8_t rval;
 	uint16_t i=0;
 	uint8_t fd;
+	
+	int8_t cmd;
+	static uint16_t gPlen;
+	
 				
 	//Init specific controller peripherals
 	MCU_Init();
+	
 	plen = Get_DHCP_Config();
 
 	
@@ -49,9 +60,13 @@ int main(void)
 	}
 #endif
 	
+	NVM_GetCurrentPosition();
+	NVM_LoadConfig( &eep_config );
 	
 //	while(1)
-	//	printf("loop:%d\n",NVM_GetCurrentPosition());
+	//	printf("loop:%d.%d.%d.%d\n",
+		//eep_config.net.local_ip[0],eep_config.net.local_ip[1],
+		//eep_config.net.local_ip[2],eep_config.net.local_ip[3]);
 	//	printf("size = %d\n",sizeof(ipComm_config_t));
 	
 	//while(1)
@@ -60,6 +75,9 @@ int main(void)
 	
 
 printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
+	        //init the ethernet/ip layer:
+	        init_udp_or_www_server(mymac,myip);
+	        www_server_port(MYWWWPORT);
 // Main loop of the program		
     while(1)
     {
@@ -80,7 +98,7 @@ printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 		}
 		
 
-#if 1
+#if 0
 //	if(plen==0){
 {
 	//we are idle so send message
@@ -100,14 +118,64 @@ printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 			// check for incomming messages not processed
 			// as part of packetloop_arp_icmp_tcp, e.g udp messages
 			//udp_client_check_for_dns_answer(buf,plen);
-			//continue;
+			continue;
 			// check for udp
-			goto UDP;
+			//goto UDP;
 		}
 		
+		                if (strncmp("GET ",(char *)&(buf[dat_p]),4)!=0){
+			                // head, post and other methods:
+			                //
+			                // for possible status codes see:
+			                // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+			                gPlen=http200ok(buf);
+			                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
+			                goto SENDTCP;
+		                }
+						// Cut the size for security reasons. If we are almost at the
+						// end of the buffer then there is a zero but normally there is
+						// a lot of room and we can cut down the processing time as
+						// correct URLs should be short in our case. If dat_p is already
+						// close to the end then the buffer is terminated already.
+						if ((dat_p+100) < BUFFER_SIZE){
+							buf[dat_p+100]='\0';
+						}
+	                if (strncmp("/favicon.ico",(char *)&(buf[dat_p+4]),12)==0){
+		                // favicon:
+		                gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 301 Moved Permanently\r\nLocation: "));
+		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("http://tuxgraphics.org/ico/a.ico"));
+		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("\r\n\r\nContent-Type: text/html\r\n\r\n"));
+		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>301 Moved Permanently</h1>\n"));
+		                goto SENDTCP;
+	                }
+					// start after the first slash:
+					cmd=analyse_get_url(buf,(char *)&(buf[dat_p+5]));
+                if (cmd==-1){
+	                gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
+	                goto SENDTCP;
+                }
+                if (cmd==-2){
+	                gPlen=http200ok(buf);
+	                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>ERROR in IP or port number</h1>"));
+	                goto SENDTCP;
+                }
+                if (cmd==10){
+	                // gPlen is already set
+	                goto SENDTCP;
+                }
+                // the main page:
+                gPlen=print_webpage(buf);
+														
+	SENDTCP:
+	www_server_reply(buf,gPlen); // send data
+	continue;					
+		
+		
+#if 0		
 UDP:
 		// check if ip packets are for us:
 		if(eth_type_is_ip_and_my_ip(buf,plen)==0){
+			//if not, skip the packet
 			continue;
 		}
 
@@ -125,7 +193,9 @@ UDP:
 			
 		//	strcpy(str,&buf[UDP_DATA_P]);
 		//	USART_print(str);
-		}				
+		}		
+		
+#endif				
 		
     } // End of main loop
 	

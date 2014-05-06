@@ -6,6 +6,8 @@ application\CommIpHelp.c
 
 application\m328IpComm.c
 
+application\webserver1.c
+
 drivers\MCU.c
 
 drivers\NVM.c
