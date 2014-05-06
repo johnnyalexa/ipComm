@@ -58,6 +58,14 @@ uint16_t print_webpage_config(uint8_t * buf)
 {
 	uint16_t plen;
 	plen=http200ok(buf);
+	
+		char buf2[600];
+		strcpy_P(buf2,config_html);
+		sprintf(buf2, buf2, 65,10,35,50); //3,2
+		plen=fill_tcp_data(buf,0,buf2); //3
+	
+	
+/*
 	plen=fill_tcp_data_p(buf,plen,PSTR("<a href=/>[home]</a>"));
 	plen=fill_tcp_data_p(buf,plen,PSTR("<h2>Alarm config</h2><pre>\n"));
 	plen=fill_tcp_data_p(buf,plen,PSTR("<form action=/u method=get>"));
@@ -77,26 +85,45 @@ uint16_t print_webpage_config(uint8_t * buf)
 //	mk_net_str(gStrbuf,gwip,4,'.',10);
 	//plen=fill_tcp_data(buf,plen,gStrbuf);
 	plen=fill_tcp_data_p(buf,plen,PSTR(">\nPasswd: <input type=password name=pw>\n<input type=submit value=change></form>\n<hr>"));
+	*/
 	return(plen);
 }
 
-#define MSG "Value of Pi = %d.%d blabla11dfadfasfs"
-const char page2[] PROGMEM ="Value of Pi = %d.%d blabla";
+
+										  
+
+const char page2[] PROGMEM ="\
+<pre>Hi!\
+Your web srv\nworks great.\
+My Ip: %d.%d.%d.%d\
+</pre>";
+
+const char page5[]=xstr(PAGE5);
 // main web page
 uint16_t print_webpage(uint8_t * buf)
 {
 	uint16_t plen;
 	plen=http200ok(buf);
 	
-	print_page();
+	//plen=add_values_to_buf((char *)buf,plen,page2,3,4,5,6);
 	
-	//char buf2[100];
+	char buf2[400];
+	strcpy_P(buf2,index_html);
+	sprintf(buf2, buf2, 65,10,35,50); //3,2
+	plen=fill_tcp_data(buf,0,buf2); //3
 	
-	//sprintf(buf2,page1,myip[0],myip[1],myip[2],myip[3]);
-	//plen=fill_tcp_data_p(buf,plen,page1);
-	//sprintf(gStrbuf,page1);
-	//itoa(123%60,gStrbuf,10); // convert integer to string
-	//strcpy(gStrbuf,page1);
+	
+#if 0	
+		//add_values_to_buf(buf,page2,1,3,4,6);
+		//plen=fill_tcp_data(buf,plen,buf2);
+		//sprintf(buf2,page1,myip[0],myip[1],myip[2],myip[3]);
+		//plen=fill_tcp_data_p(buf,plen,page1);
+		//sprintf(gStrbuf,page1);
+		//itoa(123%60,gStrbuf,10); // convert integer to string
+	
+	//
+				//plen = add_values_to_buf((char *)buf,plen,buf2,1,2,3,4);
+	//print_page();
 	
 	// sprintf(gStrbuf, "Value of Pi = %d", 314);
 	
@@ -125,6 +152,8 @@ uint16_t print_webpage(uint8_t * buf)
 /*
 	plen=fill_tcp_data_p(buf,plen,PSTR("\n</pre><hr>\n"));
 	*/
+#endif
+
 	return(plen);
 }
 

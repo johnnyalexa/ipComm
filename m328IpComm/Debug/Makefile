@@ -42,6 +42,7 @@ SUBDIRS :=  \
 C_SRCS +=  \
 ../application/CommIpHelp.c \
 ../application/m328IpComm.c \
+../application/webpages.c \
 ../application/webpage_help.c \
 ../application/webserver1.c \
 ../drivers/MCU.c \
@@ -66,6 +67,7 @@ ASM_SRCS +=
 OBJS +=  \
 application/CommIpHelp.o \
 application/m328IpComm.o \
+application/webpages.o \
 application/webpage_help.o \
 application/webserver1.o \
 drivers/MCU.o \
@@ -83,6 +85,7 @@ enc28j60_tcp_ip_stack/websrv_help_functions.o
 OBJS_AS_ARGS +=  \
 application/CommIpHelp.o \
 application/m328IpComm.o \
+application/webpages.o \
 application/webpage_help.o \
 application/webserver1.o \
 drivers/MCU.o \
@@ -100,6 +103,7 @@ enc28j60_tcp_ip_stack/websrv_help_functions.o
 C_DEPS +=  \
 application/CommIpHelp.d \
 application/m328IpComm.d \
+application/webpages.d \
 application/webpage_help.d \
 application/webserver1.d \
 drivers/MCU.d \
@@ -117,6 +121,7 @@ enc28j60_tcp_ip_stack/websrv_help_functions.d
 C_DEPS_AS_ARGS +=  \
 application/CommIpHelp.d \
 application/m328IpComm.d \
+application/webpages.d \
 application/webpage_help.d \
 application/webserver1.d \
 drivers/MCU.d \
@@ -142,6 +147,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

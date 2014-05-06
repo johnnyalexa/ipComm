@@ -10,8 +10,10 @@
 #include <stdarg.h>
 #include <avr/pgmspace.h>
 #include "webpage_help.h"
+#include "../enc28j60_tcp_ip_stack/include/ip_arp_udp_tcp.h"
 
 
+#if 0
 
 #define PAGE1 \
 <pre>Hi!\
@@ -19,9 +21,12 @@ Your web server12 wweqewqewq great.\
 My Ip: %d.%d.%d.%d\
 </pre>\
 
-const char page3[] PROGMEM = xstr(PAGE1);
+#endif
 
-uint16_t add_values_to_buf(char * buf, const char * page, ...){
+//const char page3[] PROGMEM = xstr(PAGE1);
+
+uint16_t add_values_to_buf(char * buf,uint16_t pos, const char * page, ...){
+	uint16_t rc = 0;
 	// Create temporary buffer
 	char * buf2=malloc(200);
 	// Create list of arguments
@@ -31,6 +36,7 @@ uint16_t add_values_to_buf(char * buf, const char * page, ...){
 	//strcpy_P(buf2,page);
 	// Complete the formated text with values from arguments
 	vsprintf(buf2,page,args);
+	rc = fill_tcp_data((uint8_t *)buf,pos,buf2);
 	// print resulting text
 	printf(buf2);
 	// End argument list
@@ -38,11 +44,13 @@ uint16_t add_values_to_buf(char * buf, const char * page, ...){
 	//sprintf(buf2,buf2,);
 	// Free the buffer
 	free(buf2);
+	
+	return rc;
 }
 
 
 
 void print_page(void){
-	char buf[300];
-	add_values_to_buf(buf,page3,1,2,3,4);
+	//char buf[300];
+	//add_values_to_buf(buf,page3,1,2,3,4);
 }
