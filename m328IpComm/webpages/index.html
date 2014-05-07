@@ -1,0 +1,37 @@
+<a href=/c>[config]</a>
+<a href=./>[refresh]</a>
+<h2>Alarm: %d
+</h2><pre>
+Last alarm:%d hours and %d min ago
+</pre>
+<script type="text/javascript">
+function houseclean()
+{
+if (document.orderform.cust.checked == true)
+  {
+  document.getElementById('text').disabled = true;
+  document.getElementById('sel').disabled = false;
+  }
+else
+  {
+ document.getElementById('text').disabled = false;
+  document.getElementById('sel').disabled = true;
+  }
+} 
+</script>
+
+<form id="orderform">
+<input type="radio" name="cust" value="customurl" 
+onclick=houseclean()>wanna custom url?
+
+<input type="text" id="text" name="custom" 
+placeholder="should be 5 charecters at least" disabled>
+<br><br>
+<input type="radio" name="rand" value="random" 
+onclick=houseclean()>random?
+
+<select id="sel" name="charstype" disabled>
+    <option>Letters</option>
+    <option>Number</option>
+</select>
+</form>
