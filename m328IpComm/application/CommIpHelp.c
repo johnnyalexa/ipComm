@@ -23,7 +23,7 @@ uint8_t mymac[6] = {0x00, 0x52,0x47,0x46,0x10,0x27};
 
 
 //uint8_t otherside_www_ip[4]={192,168,0,100}; // dns will fill this
-	uint8_t otherside_www_ip[4]={86,121,130,52}; // dns will fill this
+uint8_t otherside_www_ip[4]={86,121,130,52}; // dns will fill this
 // My own IP (DHCP will provide a value for it):
 uint8_t myip[4]={0,0,0,0};
 // Default gateway (DHCP will provide a value for it):
@@ -44,7 +44,11 @@ volatile uint8_t gsec=0; // counts up beyond 6 sec
 // packet buffer
 uint8_t buf[BUFFER_SIZE+1];
 
-
+void clear_buf(void){
+	int i;
+	for(i=0;i<=BUFFER_SIZE;i++)
+		buf[i]=0;
+}
 
 // the __attribute__((unused)) is a gcc compiler directive to avoid warnings about unsed variables.
 void arpresolver_result_callback(uint8_t *ip __attribute__((unused)),uint8_t reference_number,uint8_t *mac){

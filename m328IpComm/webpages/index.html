@@ -1,37 +1,49 @@
-<a href=/c>[config]</a>
-<a href=./>[refresh]</a>
-<h2>Alarm: %d
-</h2><pre>
-Last alarm:%d hours and %d min ago
-</pre>
-<script type="text/javascript">
-function houseclean()
-{
-if (document.orderform.cust.checked == true)
-  {
-  document.getElementById('text').disabled = true;
-  document.getElementById('sel').disabled = false;
-  }
-else
-  {
- document.getElementById('text').disabled = false;
-  document.getElementById('sel').disabled = true;
-  }
-} 
-</script>
+<div style="width:500px">
 
-<form id="orderform">
-<input type="radio" name="cust" value="customurl" 
-onclick=houseclean()>wanna custom url?
+<div style="background-color:#FFA500;">
+<h1 style="margin-bottom:0;">IpComm Ethernet Communicator</h1></div>
 
-<input type="text" id="text" name="custom" 
-placeholder="should be 5 charecters at least" disabled>
-<br><br>
-<input type="radio" name="rand" value="random" 
-onclick=houseclean()>random?
+<div style="background-color:#FFD700;height:155px;width:150px;float:left;">
 
-<select id="sel" name="charstype" disabled>
-    <option>Letters</option>
-    <option>Number</option>
-</select>
-</form>
+<b>Menu</b><br>
+
+<a href=/c>[config]</a><br>
+<a href=./>[refresh]</a><br><br>
+
+<img src="http://www.freshcreative.ro/portofoliu/slf_small.jpg"width="150" height="75"/>
+
+</div>
+
+
+<div id="content" style="background-color:#EEEEEE;height:150px;width:350px;float:left;">
+<center><b>Current config:</b></center>
+<table border="1" style="width:350px">
+<tr>
+  <td>MAC Address</td>
+  <td>00:43:54:23:45:0A</td>
+</tr>
+<tr>
+  <td>IP Address</td>
+  <td>192.168.0.102</td>
+</tr>
+<tr>
+  <td>Netmask</td>
+  <td>255.255.0.0</td>		
+</tr>
+<tr>
+  <td>Gateway IP</td>
+  <td>192.168.0.1</td>		
+</tr>
+<tr>
+  <td>Server IP</td>
+  <td>192.168.1.1</td>		
+</tr>
+
+</table>
+
+</div>
+
+<div id="ft" style="background-color:#FFA500;clear:both;text-align:center;">
+Copyright www.slf.ro</div>
+
+</div>

@@ -56,14 +56,18 @@ uint16_t http200ok(uint8_t * buf)
 
 uint16_t print_webpage_config(uint8_t * buf)
 {
-	uint16_t plen;
+	uint16_t plen=0;
+	//clear_buf();
 	plen=http200ok(buf);
 	
+	plen=fill_tcp_data_p(buf,plen,config_html);
+	
+	/*
 		char buf2[600];
 		strcpy_P(buf2,config_html);
 		sprintf(buf2, buf2, 65,10,35,50); //3,2
 		plen=fill_tcp_data(buf,0,buf2); //3
-	
+	*/
 	
 /*
 	plen=fill_tcp_data_p(buf,plen,PSTR("<a href=/>[home]</a>"));
@@ -91,26 +95,55 @@ uint16_t print_webpage_config(uint8_t * buf)
 
 
 										  
-
-const char page2[] PROGMEM ="\
-<pre>Hi!\
-Your web srv\nworks great.\
-My Ip: %d.%d.%d.%d\
-</pre>";
-
-const char page5[]=xstr(PAGE5);
 // main web page
 uint16_t print_webpage(uint8_t * buf)
 {
-	uint16_t plen;
+	uint16_t plen=0;
+	char buf2[200];
+	char buf3[200];
+	//clear_buf();
+	
 	plen=http200ok(buf);
 	
 	//plen=add_values_to_buf((char *)buf,plen,page2,3,4,5,6);
 	
-	char buf2[400];
+	
+	plen=fill_tcp_data_p(buf,plen,main_div);    //div1
+	plen=fill_tcp_data_p(buf,plen,hdr_div);     //div2
+	plen=fill_tcp_data_p(buf,plen,menu_div);    //div3
+	plen=fill_tcp_data_p(buf,plen,content_div); //div4
+	
+	/*
 	strcpy_P(buf2,index_html);
-	sprintf(buf2, buf2, 65,10,35,50); //3,2
-	plen=fill_tcp_data(buf,0,buf2); //3
+	sprintf(buf2, buf2, 65,10,35,50); 
+	plen=fill_tcp_data(buf,plen,buf2); 
+	*/
+	
+	plen=fill_tcp_data_p(buf,plen,table_start); 
+	
+	strcpy_P(buf2,table_line_MAC);
+	sprintf(buf3, buf2,"MAC Address",0x00,0x45,0x34,0x0A,0x34,0x01);
+	plen=fill_tcp_data(buf,plen,buf3);
+	
+	strcpy_P(buf2,table_line_IP);
+	sprintf(buf3, buf2,"IP Address",192,168,0,102);
+	plen=fill_tcp_data(buf,plen,buf3);
+	/*
+		plen=fill_tcp_data_p(buf,plen,table_line_MAC); 
+		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
+		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
+		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
+		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
+		*/
+	plen=fill_tcp_data_p(buf,plen,table_end); 
+	
+	
+	
+	plen=fill_tcp_data_p(buf,plen,end_div);  //div4
+	plen=fill_tcp_data_p(buf,plen,end_div);  //div3
+	plen=fill_tcp_data_p(buf,plen,end_div);  //div2
+	plen=fill_tcp_data_p(buf,plen,footer_div); 
+	plen=fill_tcp_data_p(buf,plen,end_div);  //div1
 	
 	
 #if 0	
