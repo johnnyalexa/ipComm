@@ -43,7 +43,7 @@ const char menu_div[] PROGMEM =QUOTE(
 *	<div>  content </div>
 ***************************************************/
 const char content_div[] PROGMEM =QUOTE(
-<div id="content" style="background-color:#EEEEEE;height:150px;width:350px;float:left;">
+<div id="content" style="background-color:#EEEEEE;height:155px;width:350px;float:left;">
 <center><b>Current config:</b></center>
 );
 

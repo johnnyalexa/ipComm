@@ -61,6 +61,7 @@ uint16_t print_webpage_config(uint8_t * buf)
 	plen=http200ok(buf);
 	
 	plen=fill_tcp_data_p(buf,plen,config_html);
+	plen=fill_tcp_data(buf,plen,"\0");
 	
 	/*
 		char buf2[600];
@@ -109,9 +110,9 @@ uint16_t print_webpage(uint8_t * buf)
 	
 	
 	plen=fill_tcp_data_p(buf,plen,main_div);    //div1
-	plen=fill_tcp_data_p(buf,plen,hdr_div);     //div2
-	plen=fill_tcp_data_p(buf,plen,menu_div);    //div3
-	plen=fill_tcp_data_p(buf,plen,content_div); //div4
+	plen=fill_tcp_data_p(buf,plen,hdr_div);     /* </div> terminated */
+	plen=fill_tcp_data_p(buf,plen,menu_div);    /* </div> terminated */
+	plen=fill_tcp_data_p(buf,plen,content_div); //div2
 	
 	/*
 	strcpy_P(buf2,index_html);
@@ -139,8 +140,6 @@ uint16_t print_webpage(uint8_t * buf)
 	
 	
 	
-	plen=fill_tcp_data_p(buf,plen,end_div);  //div4
-	plen=fill_tcp_data_p(buf,plen,end_div);  //div3
 	plen=fill_tcp_data_p(buf,plen,end_div);  //div2
 	plen=fill_tcp_data_p(buf,plen,footer_div); 
 	plen=fill_tcp_data_p(buf,plen,end_div);  //div1

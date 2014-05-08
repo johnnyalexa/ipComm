@@ -92,7 +92,7 @@ printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 		
 		if(0 == plen){ //we are idle, process some dns
 			// Clear buffer to have empty string on a new page
-			clear_buf(); 
+			//clear_buf(); 
 			
 			
 		}
