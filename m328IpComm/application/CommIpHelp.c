@@ -44,9 +44,9 @@ volatile uint8_t gsec=0; // counts up beyond 6 sec
 // packet buffer
 uint8_t buf[BUFFER_SIZE+1];
 
-void clear_buf(void){
+void clear_buf(uint16_t len){
 	int i;
-	for(i=0;i<=BUFFER_SIZE;i++)
+	for(i=len+1;i<=len+10;i++)
 		buf[i]=0;
 }
 

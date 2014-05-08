@@ -28,11 +28,11 @@ static ipComm_config_t eep_config;
 int main(void)
 {
 	uint16_t dat_p,plen;
-	uint8_t payloadlen=0;
-	char str[20];
-	uint8_t rval;
-	uint16_t i=0;
-	uint8_t fd;
+	//uint8_t payloadlen=0;
+	//char str[20];
+	//uint8_t rval;
+	//uint16_t i=0;
+	//uint8_t fd;
 	
 	int8_t cmd;
 	static uint16_t gPlen;
@@ -74,28 +74,41 @@ int main(void)
 	
 	
 
-printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
-	        //init the ethernet/ip layer:
-	        init_udp_or_www_server(mymac,myip);
-	        www_server_port(MYWWWPORT);
+	printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
+			
+	//init the ethernet/ip layer:
+	init_udp_or_www_server(mymac,myip);
+	www_server_port(MYWWWPORT);
+			
+			
 // Main loop of the program		
     while(1)
     {
-		//USART_Transmit(0x32);
-//		printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
+		// Gets a packet from the network receive buffer, if one is available.
+		// The packet will by headed by an ethernet header.
+		//      maxlen  The maximum acceptable length of a retrieved packet.
+		//      packet  Pointer where packet data should be stored.
+		// Returns: Packet length in bytes if a packet was retrieved, zero otherwise.
 		plen=enc28j60PacketReceive(BUFFER_SIZE, buf);
-		buf[BUFFER_SIZE]='\0'; // http is an ascii protocol. Make sure we have a string terminator.
-		// DHCP renew IP:
-		plen=packetloop_dhcp_renewhandler(buf,plen); // for this to work you have to call dhcp_6sec_tick() every 6 sec
+		// http is an ascii protocol. Make sure we have a string terminator.
+		buf[BUFFER_SIZE]='\0'; 
+		
+		// DHCP renew IP: for this to work you have to call dhcp_6sec_tick() every 6 sec
+		plen=packetloop_dhcp_renewhandler(buf,plen); 
+		
+		// return 0 to just continue in the packet loop and return the position
+		// of the tcp data if there is tcp data part
 		dat_p=packetloop_arp_icmp_tcp(buf,plen);
 		
+		printf("plen=%d,dat_p=%d\n",plen,dat_p);
 		
-		if(0 == plen){ //we are idle, process some dns
+		
+		//if(0 == plen){ //we are idle, process some dns
 			// Clear buffer to have empty string on a new page
 			//clear_buf(); 
 			
-			
-		}
+			//continue;
+		//}
 		
 
 #if 0
@@ -114,32 +127,31 @@ printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 #endif
 
 
-		if(dat_p==0){ // plen!=0
-			// check for incomming messages not processed
-			// as part of packetloop_arp_icmp_tcp, e.g udp messages
+		if(dat_p==0){
 			//udp_client_check_for_dns_answer(buf,plen);
-			continue;
-			// check for udp
-			//goto UDP;
+			continue; //go to while 1
 		}
 		
-		                if (strncmp("GET ",(char *)&(buf[dat_p]),4)!=0){
-			                // head, post and other methods:
-			                //
-			                // for possible status codes see:
-			                // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-			                gPlen=http200ok(buf);
-			                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
-			                goto SENDTCP;
-		                }
-						// Cut the size for security reasons. If we are almost at the
-						// end of the buffer then there is a zero but normally there is
-						// a lot of room and we can cut down the processing time as
-						// correct URLs should be short in our case. If dat_p is already
-						// close to the end then the buffer is terminated already.
-						if ((dat_p+100) < BUFFER_SIZE){
-							buf[dat_p+100]='\0';
-						}
+		
+        if (strncmp("GET ",(char *)&(buf[dat_p]),4)!=0){
+          // head, post and other methods: (not GET)
+          //
+          // for possible status codes see:
+          // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+          gPlen=http200ok(buf);
+          gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
+          goto SENDTCP;
+          }
+			// Cut the size for security reasons. If we are almost at the
+			// end of the buffer then there is a zero but normally there is
+			// a lot of room and we can cut down the processing time as
+			// correct URLs should be short in our case. If dat_p is already
+			// close to the end then the buffer is terminated already.
+		if ((dat_p+50) < BUFFER_SIZE){
+			buf[dat_p+50]='\0'; //100
+		}
+		
+		
 	                if (strncmp("/favicon.ico",(char *)&(buf[dat_p+4]),12)==0){
 		                // favicon:
 		                gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 301 Moved Permanently\r\nLocation: "));
@@ -148,25 +160,29 @@ printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>301 Moved Permanently</h1>\n"));
 		                goto SENDTCP;
 	                }
-					// start after the first slash:
-					cmd=analyse_get_url(buf,(char *)&(buf[dat_p+5]));
-                if (cmd==-1){
-	                gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
-	                goto SENDTCP;
-                }
-                if (cmd==-2){
-	                gPlen=http200ok(buf);
-	                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>ERROR in IP or port number</h1>"));
-	                goto SENDTCP;
-                }
-                if (cmd==10){
-	                // gPlen is already set
-	                goto SENDTCP;
-                }
-                // the main page:
-                gPlen=print_webpage(buf);
+		
+		// start after the first slash:
+		cmd=analyse_get_url(buf,(char *)&(buf[dat_p+5]));
+        
+		if (cmd==-1){
+			gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
+	        goto SENDTCP;
+            }
+        if (cmd==-2){
+	        gPlen=http200ok(buf);
+	        gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>ERROR in IP or port number</h1>"));
+	        goto SENDTCP;
+            }
+        if (cmd==10){
+	       // gPlen is already set
+		   gPlen=print_webpage_config(buf);
+	        goto SENDTCP;
+            }
+ 
+           // the main page:
+           gPlen=print_webpage(buf);
 														
-	SENDTCP:
+SENDTCP:
 	www_server_reply(buf,gPlen); // send data
 	continue;					
 		

@@ -20,6 +20,7 @@ extern const char table_start[];
 extern const char table_end[];
 extern const char table_line_MAC[];
 extern const char table_line_IP[];
+extern const char table_line_Port[];
 
 extern const char index_html[];
 extern const char config_html[];

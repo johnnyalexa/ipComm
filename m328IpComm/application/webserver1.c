@@ -56,42 +56,32 @@ uint16_t http200ok(uint8_t * buf)
 
 uint16_t print_webpage_config(uint8_t * buf)
 {
-	uint16_t plen=0;
-	//clear_buf();
-	plen=http200ok(buf);
+	uint16_t plenc=0;
 	
-	plen=fill_tcp_data_p(buf,plen,config_html);
-	plen=fill_tcp_data(buf,plen,"\0");
+	plenc=http200ok(buf);
+	//clear_buf(plen);
+	plenc=fill_tcp_data_p(buf,plenc,config_html);
 	
-	/*
-		char buf2[600];
-		strcpy_P(buf2,config_html);
-		sprintf(buf2, buf2, 65,10,35,50); //3,2
-		plen=fill_tcp_data(buf,0,buf2); //3
-	*/
+	printf("plenc=%d\n",plenc);
+	//plen=fill_tcp_data(buf,plen,"\0");
+	//plen=fill_tcp_data_p(buf,plen,'\0'); //EOF
 	
-/*
-	plen=fill_tcp_data_p(buf,plen,PSTR("<a href=/>[home]</a>"));
-	plen=fill_tcp_data_p(buf,plen,PSTR("<h2>Alarm config</h2><pre>\n"));
-	plen=fill_tcp_data_p(buf,plen,PSTR("<form action=/u method=get>"));
-	plen=fill_tcp_data_p(buf,plen,PSTR("Enabled:<input type=checkbox value=1 name=ae "));
-//	if (alarmOn){
-	//	plen=fill_tcp_data_p(buf,plen,PSTR("checked"));
-//	}
-	plen=fill_tcp_data_p(buf,plen,PSTR(">\nName:   <input type=text name=n value=\""));
-	//plen=fill_tcp_data(buf,plen,myname);
-	plen=fill_tcp_data_p(buf,plen,PSTR("\">\nSendto: ip=<input type=text name=di value="));
-	//mk_net_str(gStrbuf,udpsrvip,4,'.',10);
-	//plen=fill_tcp_data(buf,plen,gStrbuf);
-	plen=fill_tcp_data_p(buf,plen,PSTR("> port=<input type=text name=dp size=4 value="));
-	//itoa(udpsrvport,gStrbuf,10);
-	//plen=fill_tcp_data(buf,plen,gStrbuf);
-	plen=fill_tcp_data_p(buf,plen,PSTR("> gwip=<input type=text name=gi value="));
-//	mk_net_str(gStrbuf,gwip,4,'.',10);
-	//plen=fill_tcp_data(buf,plen,gStrbuf);
-	plen=fill_tcp_data_p(buf,plen,PSTR(">\nPasswd: <input type=password name=pw>\n<input type=submit value=change></form>\n<hr>"));
-	*/
-	return(plen);
+	//plenc=fill_tcp_data_p(buf,plenc,main_div);    //div1
+	//plenc=fill_tcp_data_p(buf,plenc,hdr_div);     /* </div> terminated */
+	//plenc=fill_tcp_data_p(buf,plenc,menu_div);    /* </div> terminated */
+	
+//	plenc=fill_tcp_data_p(buf,plenc,end_div);     //div1
+	
+	//clear_buf(plenc+1);
+
+	return(plenc);
+}
+
+uint16_t print_webpage_login(uint8_t * buf)
+{
+	uint16_t plenl=0;
+	
+	return plenl;	
 }
 
 
@@ -106,99 +96,66 @@ uint16_t print_webpage(uint8_t * buf)
 	
 	plen=http200ok(buf);
 	
-	//plen=add_values_to_buf((char *)buf,plen,page2,3,4,5,6);
-	
-	
 	plen=fill_tcp_data_p(buf,plen,main_div);    //div1
 	plen=fill_tcp_data_p(buf,plen,hdr_div);     /* </div> terminated */
 	plen=fill_tcp_data_p(buf,plen,menu_div);    /* </div> terminated */
 	plen=fill_tcp_data_p(buf,plen,content_div); //div2
 	
-	/*
-	strcpy_P(buf2,index_html);
-	sprintf(buf2, buf2, 65,10,35,50); 
-	plen=fill_tcp_data(buf,plen,buf2); 
-	*/
-	
+
 	plen=fill_tcp_data_p(buf,plen,table_start); 
 	
 	strcpy_P(buf2,table_line_MAC);
-	sprintf(buf3, buf2,"MAC Address",0x00,0x45,0x34,0x0A,0x34,0x01);
+	sprintf(buf3, buf2,"MAC Address",
+			mymac[0],mymac[1],mymac[2],mymac[3],mymac[4],mymac[5]);
 	plen=fill_tcp_data(buf,plen,buf3);
 	
 	strcpy_P(buf2,table_line_IP);
-	sprintf(buf3, buf2,"IP Address",192,168,0,102);
+	sprintf(buf3, buf2,"IP Address",
+			myip[0],myip[1],myip[2],myip[3]);
 	plen=fill_tcp_data(buf,plen,buf3);
-	/*
-		plen=fill_tcp_data_p(buf,plen,table_line_MAC); 
-		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
-		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
-		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
-		plen=fill_tcp_data_p(buf,plen,table_line_IP); 
-		*/
+	
+	strcpy_P(buf2,table_line_IP);
+	sprintf(buf3, buf2,"Netmask",
+			netmask[0],netmask[1],netmask[2],netmask[3]);
+	plen=fill_tcp_data(buf,plen,buf3);
+	
+	strcpy_P(buf2,table_line_IP);
+	sprintf(buf3, buf2,"Gateway IP",
+			gwip[0],gwip[1],gwip[2],gwip[3]);
+	plen=fill_tcp_data(buf,plen,buf3);
+	
+	strcpy_P(buf2,table_line_IP);
+	sprintf(buf3, buf2,"Server IP",
+			otherside_www_ip[0],otherside_www_ip[1],otherside_www_ip[2],otherside_www_ip[3]);
+	plen=fill_tcp_data(buf,plen,buf3);
+	
+	strcpy_P(buf2,table_line_Port);
+	sprintf(buf3, buf2,"Server Port",MYTCPPORT);
+	plen=fill_tcp_data(buf,plen,buf3);
+	
 	plen=fill_tcp_data_p(buf,plen,table_end); 
-	
-	
 	
 	plen=fill_tcp_data_p(buf,plen,end_div);  //div2
 	plen=fill_tcp_data_p(buf,plen,footer_div); 
 	plen=fill_tcp_data_p(buf,plen,end_div);  //div1
 	
 	
-#if 0	
-		//add_values_to_buf(buf,page2,1,3,4,6);
-		//plen=fill_tcp_data(buf,plen,buf2);
-		//sprintf(buf2,page1,myip[0],myip[1],myip[2],myip[3]);
-		//plen=fill_tcp_data_p(buf,plen,page1);
-		//sprintf(gStrbuf,page1);
-		//itoa(123%60,gStrbuf,10); // convert integer to string
+	//plen=fill_tcp_data_p(buf,plen,PSTR("\0")); //EOF
 	
-	//
-				//plen = add_values_to_buf((char *)buf,plen,buf2,1,2,3,4);
-	//print_page();
-	
-	// sprintf(gStrbuf, "Value of Pi = %d", 314);
-	
-
-	//sprintf(buf2, page2, 314,26);
-	// plen=fill_tcp_data(buf,0,buf2);
-	//plen=fill_tcp_data_p(buf,plen,page1);
-	/*
-	plen=fill_tcp_data_p(buf,plen,PSTR("<a href=/c>[config]</a> <a href=./>[refresh]</a>"));
-	plen=fill_tcp_data_p(buf,plen,PSTR("<h2>Alarm: "));
-	//plen=fill_tcp_data(buf,plen,myname);
-	plen=fill_tcp_data_p(buf,plen,PSTR("</h2><pre>\n"));
-	plen=fill_tcp_data_p(buf,plen,PSTR("Last alarm:\n"));
-	if (lastAlarm){
-		if (gMin>59){
-			itoa(gMin/60,gStrbuf,10); // convert integer to string
-			plen=fill_tcp_data(buf,plen,gStrbuf);
-			plen=fill_tcp_data_p(buf,plen,PSTR("hours and "));
-		}
-		itoa(gMin%60,gStrbuf,10); // convert integer to string
-		plen=fill_tcp_data(buf,plen,gStrbuf);
-		plen=fill_tcp_data_p(buf,plen,PSTR("min ago"));
-		}else{
-		plen=fill_tcp_data_p(buf,plen,PSTR("none in last 14 days"));
-	} */
-/*
-	plen=fill_tcp_data_p(buf,plen,PSTR("\n</pre><hr>\n"));
-	*/
-#endif
 
 	return(plen);
 }
 
 // analyse the url given
-//                The string passed to this function will look like this:
-//                ?s=1 HTTP/1.....
-//                We start after the first slash ("/" already removed)
+// The string passed to this function will look like this:
+// ?s=1 HTTP/1.....
+// We start after the first slash ("/" already removed)
 int8_t analyse_get_url(uint8_t * buf, char *str)
 {
 	// the first slash:
 	if (*str == 'c'){
 		// configpage:
-		gPlen=print_webpage_config(buf);
+	//	gPlen=print_webpage_config(buf);
 		return(10);
 	}
 	if (*str == 'u'){
@@ -207,7 +164,7 @@ int8_t analyse_get_url(uint8_t * buf, char *str)
 			if (verify_password(gStrbuf)){
 				if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"n")){
 					urldecode(gStrbuf);
-				//	gStrbuf[MYNAME_LEN]='\0';
+					gStrbuf[MYNAME_LEN]='\0';
 				//	strcpy(myname,gStrbuf);
 				}
 				if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"ae")){

@@ -31,10 +31,10 @@ const char hdr_div[] PROGMEM =QUOTE(
 *	<div>  Menu </div>
 ***************************************************/
 const char menu_div[] PROGMEM =QUOTE(
-<div style="background-color:#FFD700;height:155px;width:150px;float:left;">
+<div style="background-color:#FFD700;height:185px;width:150px;float:left;">
 <b>Menu</b><br>
 <a href=/c>[config]</a><br>
-<a href=./>[refresh]</a><br><br>
+<a href=./>[refresh]</a><br><br><br>
 <img src="http://www.freshcreative.ro/portofoliu/slf_small.jpg"width="150" height="75"/>
 </div>
 );
@@ -43,7 +43,7 @@ const char menu_div[] PROGMEM =QUOTE(
 *	<div>  content </div>
 ***************************************************/
 const char content_div[] PROGMEM =QUOTE(
-<div id="content" style="background-color:#EEEEEE;height:155px;width:350px;float:left;">
+<div id="content" style="background-color:#EEEEEE;height:185px;width:350px;float:left;">
 <center><b>Current config:</b></center>
 );
 
@@ -78,10 +78,16 @@ const char table_line_MAC[] PROGMEM =QUOTE(
 const char table_line_IP[] PROGMEM =QUOTE(
 <tr>
 <td>%s</td>
-<td>%d.%d.%d.%d </td>
+<td>%d.%d.%d.%d</td>
 </tr>
 );
 
+const char table_line_Port[] PROGMEM =QUOTE(
+<tr>
+<td>%s</td>
+<td>%u</td>
+</tr>
+);
 /**************************************************
 *	Index.html 
 ***************************************************/
@@ -109,14 +115,9 @@ Last alarm:\n\
 /**************************************************
 *	Config.html
 ***************************************************/
-const char config_html[] PROGMEM =QUOTE(...
+const char config_html[] PROGMEM =QUOTE(
 <a href=/>[home]</a>
-<h2>Alarm config:%d.%d.%d.%d</h2>
+<h2>Alarm config:</h2>
 );
 
-/*
-"<a href=/>[home]</a>"
-"<h2>Alarm config</h2><pre>\n"
-"<form action=/u method=get>"
-"Enabled:<input type=checkbox value=1 name=ae ";
-*/
+
