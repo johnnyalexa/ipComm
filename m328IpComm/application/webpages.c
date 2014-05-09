@@ -24,7 +24,7 @@ const char end_div[] PROGMEM =QUOTE(
 ***************************************************/
 const char hdr_div[] PROGMEM =QUOTE(
 <div style="background-color:#FFA500;">
-<h1 style="margin-bottom:0;">IpComm Ethernet Communicator</h1></div>
+<h1 style="margin-bottom:0;text-align:center;">%s</h1></div>
 );
 
 /**************************************************
@@ -88,6 +88,63 @@ const char table_line_Port[] PROGMEM =QUOTE(
 <td>%u</td>
 </tr>
 );
+
+/**************************************************
+*	Form
+***************************************************/
+
+const char form_post[] PROGMEM =QUOTE(
+<form action="/i" method="POST">
+);
+const char end_form[] PROGMEM =QUOTE(
+</form>
+);
+
+/**************************************************
+*	Login Form
+***************************************************/
+const char login_form[] PROGMEM =QUOTE(
+<br>
+<table border="1" cellspacing="1" cellpadding="0">
+<tr>
+<td>&nbsp;Username:&nbsp;</td>
+<td>
+<input NAME="username" id="username" TYPE="text" MAXLENGTH="256" VALUE="">
+</td>
+</tr>
+<tr>
+<td>&nbsp;Password:&nbsp;</td>
+<td>
+<input NAME="password" id="password" TYPE="password" autocomplete="off" MAXLENGTH="256" VALUE="">
+</td>
+</tr>
+</table>
+);
+
+/**************************************************
+*	Buttons for reset and Submit
+***************************************************/
+const char submit_reset_button[] PROGMEM =QUOTE(
+<p>
+<input TYPE="submit" VALUE="Login">&nbsp;
+<input TYPE="reset" VALUE="Reset">
+</p>
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**************************************************
 *	Index.html 
 ***************************************************/

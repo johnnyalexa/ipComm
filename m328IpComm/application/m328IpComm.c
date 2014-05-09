@@ -29,13 +29,15 @@ int main(void)
 {
 	uint16_t dat_p,plen;
 	//uint8_t payloadlen=0;
-	//char str[20];
+	//char str[100];
 	//uint8_t rval;
 	//uint16_t i=0;
 	//uint8_t fd;
 	
 	int8_t cmd;
 	static uint16_t gPlen;
+	
+	
 	
 				
 	//Init specific controller peripherals
@@ -100,7 +102,7 @@ int main(void)
 		// of the tcp data if there is tcp data part
 		dat_p=packetloop_arp_icmp_tcp(buf,plen);
 		
-		printf("plen=%d,dat_p=%d\n",plen,dat_p);
+		//printf("plen=%d,dat_p=%d\n",plen,dat_p);
 		
 		
 		//if(0 == plen){ //we are idle, process some dns
@@ -132,8 +134,26 @@ int main(void)
 			continue; //go to while 1
 		}
 		
+			//strncpy(str,(char *)&(buf[dat_p]),sizeof(str));						
+			printf("buf[dat_p]=%s\n",(char *)&(buf[dat_p]));
 		
-        if (strncmp("GET ",(char *)&(buf[dat_p]),4)!=0){
+		/*if (strncmp("GET ",(char *)&(buf[dat_p]),4)==0){
+			//We have a GET request
+			printf("GET\n");
+		}else
+		if (strncmp("POST",(char *)&(buf[dat_p]),4)==0){
+			//We have a POST request
+			printf("POST\n");
+		}else{
+			printf("OTHER\n");
+			gPlen=http200ok(buf);
+			gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
+			goto SENDTCP;
+		}
+		*/
+		
+		
+        if ((strncmp("GET ",(char *)&(buf[dat_p]),4)!=0)&&(strncmp("POST",(char *)&(buf[dat_p]),4)!=0)){
           // head, post and other methods: (not GET)
           //
           // for possible status codes see:
@@ -142,30 +162,33 @@ int main(void)
           gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
           goto SENDTCP;
           }
-			// Cut the size for security reasons. If we are almost at the
-			// end of the buffer then there is a zero but normally there is
-			// a lot of room and we can cut down the processing time as
-			// correct URLs should be short in our case. If dat_p is already
-			// close to the end then the buffer is terminated already.
-		if ((dat_p+50) < BUFFER_SIZE){
-			buf[dat_p+50]='\0'; //100
+		  
+		  
+		// Cut the size for security reasons. If we are almost at the
+		// end of the buffer then there is a zero but normally there is
+		// a lot of room and we can cut down the processing time as
+		// correct URLs should be short in our case. If dat_p is already
+		// close to the end then the buffer is terminated already.
+		if ((dat_p+100) < BUFFER_SIZE){
+			buf[dat_p+100]='\0'; //100
 		}
 		
-		
-	                if (strncmp("/favicon.ico",(char *)&(buf[dat_p+4]),12)==0){
-		                // favicon:
-		                gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 301 Moved Permanently\r\nLocation: "));
-		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("http://tuxgraphics.org/ico/a.ico"));
-		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("\r\n\r\nContent-Type: text/html\r\n\r\n"));
-		                gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>301 Moved Permanently</h1>\n"));
-		                goto SENDTCP;
-	                }
-		
+/*		
+	    if (strncmp("/favicon.ico",(char *)&(buf[dat_p+4]),12)==0){
+		   // favicon:
+		   gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 301 Moved Permanently\r\nLocation: "));
+		   gPlen=fill_tcp_data_p(buf,gPlen,PSTR("http://tuxgraphics.org/ico/a.ico"));
+		   gPlen=fill_tcp_data_p(buf,gPlen,PSTR("\r\n\r\nContent-Type: text/html\r\n\r\n"));
+		   gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>301 Moved Permanently</h1>\n"));
+		   goto SENDTCP;
+	     }
+*/		
+
 		// start after the first slash:
 		cmd=analyse_get_url(buf,(char *)&(buf[dat_p+5]));
         
 		if (cmd==-1){
-			gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
+			gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 UnauthorizedB</h1>"));
 	        goto SENDTCP;
             }
         if (cmd==-2){
@@ -173,13 +196,18 @@ int main(void)
 	        gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>ERROR in IP or port number</h1>"));
 	        goto SENDTCP;
             }
+		if(cmd == 5){
+			gPlen=print_webpage_login(buf);
+			goto SENDTCP;
+		}
         if (cmd==10){
 	       // gPlen is already set
 		   gPlen=print_webpage_config(buf);
 	        goto SENDTCP;
             }
  
-           // the main page:
+           // the main page: the login page
+		//   gPlen = print_webpage_login(buf);
            gPlen=print_webpage(buf);
 														
 SENDTCP:

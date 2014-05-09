@@ -57,12 +57,30 @@ uint16_t http200ok(uint8_t * buf)
 uint16_t print_webpage_config(uint8_t * buf)
 {
 	uint16_t plenc=0;
-	
+	char buf2[200];
+	char buf3[200];
+		
 	plenc=http200ok(buf);
-	//clear_buf(plen);
-	plenc=fill_tcp_data_p(buf,plenc,config_html);
 	
-	printf("plenc=%d\n",plenc);
+	plenc=fill_tcp_data_p(buf,plenc,form_post);
+	plenc=fill_tcp_data_p(buf,plenc,main_div);    //div1
+	
+	
+	strcpy_P(buf2,hdr_div);						/* </div> terminated */
+	sprintf(buf3, buf2,"SLF IpComm Login");
+	plenc=fill_tcp_data(buf,plenc,buf3);
+	
+	plenc=fill_tcp_data_p(buf,plenc,login_form);
+	plenc=fill_tcp_data_p(buf,plenc,submit_reset_button);
+	
+	plenc=fill_tcp_data_p(buf,plenc,footer_div); 
+	plenc=fill_tcp_data_p(buf,plenc,end_div);	 //div1
+	plenc=fill_tcp_data_p(buf,plenc,end_form);   
+	
+	//clear_buf(plen);
+	//plenc=fill_tcp_data_p(buf,plenc,config_html);
+	
+	//printf("plenc=%d\n",plenc);
 	//plen=fill_tcp_data(buf,plen,"\0");
 	//plen=fill_tcp_data_p(buf,plen,'\0'); //EOF
 	
@@ -80,6 +98,25 @@ uint16_t print_webpage_config(uint8_t * buf)
 uint16_t print_webpage_login(uint8_t * buf)
 {
 	uint16_t plenl=0;
+	char buf2[200];
+	char buf3[200];
+	
+	plenl=http200ok(buf);
+	
+	plenl=fill_tcp_data_p(buf,plenl,form_post);
+	plenl=fill_tcp_data_p(buf,plenl,main_div);    //div1
+	
+	
+	strcpy_P(buf2,hdr_div);						/* </div> terminated */
+	sprintf(buf3, buf2,"SLF IpComm Login");
+	plenl=fill_tcp_data(buf,plenl,buf3);
+	
+	plenl=fill_tcp_data_p(buf,plenl,login_form);
+	plenl=fill_tcp_data_p(buf,plenl,submit_reset_button);
+	
+	plenl=fill_tcp_data_p(buf,plenl,footer_div);
+	plenl=fill_tcp_data_p(buf,plenl,end_div);	 //div1
+	plenl=fill_tcp_data_p(buf,plenl,end_form);
 	
 	return plenl;	
 }
@@ -97,7 +134,11 @@ uint16_t print_webpage(uint8_t * buf)
 	plen=http200ok(buf);
 	
 	plen=fill_tcp_data_p(buf,plen,main_div);    //div1
-	plen=fill_tcp_data_p(buf,plen,hdr_div);     /* </div> terminated */
+	
+	strcpy_P(buf2,hdr_div);						/* </div> terminated */
+	sprintf(buf3, buf2,"IpComm Ethernet Communicator");
+	plen=fill_tcp_data(buf,plen,buf3);
+	
 	plen=fill_tcp_data_p(buf,plen,menu_div);    /* </div> terminated */
 	plen=fill_tcp_data_p(buf,plen,content_div); //div2
 	
@@ -156,7 +197,70 @@ int8_t analyse_get_url(uint8_t * buf, char *str)
 	if (*str == 'c'){
 		// configpage:
 	//	gPlen=print_webpage_config(buf);
+		return(5);
+	}
+	
+	if (*str == 'i'){
+		return (10);
+	}
+	if (*str == 'u'){
+		if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"pw")){
+			urldecode(gStrbuf);
+			if (verify_password(gStrbuf)){
+				if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"n")){
+					urldecode(gStrbuf);
+					gStrbuf[MYNAME_LEN]='\0';
+				//	strcpy(myname,gStrbuf);
+				}
+				if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"ae")){
+				//	alarmOn=1;
+					}else{
+				//	alarmOn=0;
+				}
+				/*if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"di")){
+					urldecode(gStrbuf);
+					if (parse_ip(udpsrvip,gStrbuf)!=0){
+						return(-2);
+					}
+				} */
+				/*if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"dp")){
+					gStrbuf[4]='\0';
+					udpsrvport=atoi(gStrbuf);
+				} */
+				/*if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"gi")){
+					urldecode(gStrbuf);
+					if (parse_ip(gwip,gStrbuf)!=0){
+						return(-2);
+					}
+				} */
+				//data2eeprom();
+				gPlen=http200ok(buf);
+				gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<a href=/>[home]</a>"));
+				gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h2>OK</h2>"));
+				return(10);
+			}
+		}
+		return(-1);
+	}
+	return(0);
+}
+
+
+// analyse the url given
+// The string passed to this function will look like this:
+// ?s=1 HTTP/1.....
+// We start after the first slash ("/" already removed)
+int8_t analyse_post_url(uint8_t * buf, char *str)
+{
+	// the first slash:
+	if (*str == 'c'){
+		// configpage:
+	//	gPlen=print_webpage_config(buf);
 		return(10);
+	}
+	
+	if (*str == 'i'){
+		return (5);
 	}
 	if (*str == 'u'){
 		if (find_key_val(str,gStrbuf,STR_BUFFER_SIZE,"pw")){

@@ -60,6 +60,9 @@ uint8_t verify_password(char *str);
 uint16_t http200ok(uint8_t * buf);
 uint16_t print_webpage_config(uint8_t * buf);
 uint16_t print_webpage(uint8_t * buf);
+
+uint16_t print_webpage_login(uint8_t * buf);
+
 int8_t analyse_get_url(uint8_t * buf, char *str);
 
 

@@ -22,8 +22,13 @@ extern const char table_line_MAC[];
 extern const char table_line_IP[];
 extern const char table_line_Port[];
 
+extern const char form_post[];
+extern const char end_form[];
+extern const char login_form[];
+
 extern const char index_html[];
 extern const char config_html[];
+extern const char submit_reset_button[];
 
 // Print s text as a string
 #define QUOTE(...) #__VA_ARGS__
