@@ -1,3 +1,15 @@
+<!--
+<script type="text/javascript">
+    function clicked() {
+       if (confirm('Do you wanna to submit?')) {
+           yourformelement.submit();
+       } else {
+           return false;
+       }
+    }
+</script>	
+
+-->
 <form method="POST">
 
 <div style="width:500px">
@@ -23,7 +35,8 @@
 
 
 <p>
-<input TYPE="submit" VALUE="Submit">&nbsp;
+<!--<input TYPE="submit" onclick="clicked();" VALUE="Submit">&nbsp; -->
+<input TYPE="submit" onclick="alert('Do you really, reeally?')" VALUE="Submit">&nbsp;
 <input TYPE="reset" VALUE="Reset">
 </p>
 
