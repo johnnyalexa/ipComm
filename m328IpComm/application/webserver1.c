@@ -62,36 +62,42 @@ uint16_t print_webpage_config(uint8_t * buf)
 		
 	plenc=http200ok(buf);
 	
-	plenc=fill_tcp_data_p(buf,plenc,form_post);
-	plenc=fill_tcp_data_p(buf,plenc,main_div);    //div1
+	plenc=fill_tcp_data_p(buf,plenc,form_post);   // Start form
+	plenc=fill_tcp_data_p(buf,plenc,main_div);    //Main div of the page         -----------------------------------
+	
+	/* Header </div> terminated */
+	strcpy_P(buf2,hdr_div);						                             //  -----------------------------------
+	sprintf(buf3, buf2,"SLF IpComm Configuration");                          //  *  SLF IpComm Configuration       *
+	plenc=fill_tcp_data(buf,plenc,buf3);                                     //  ----------------------------------- 
 	
 	
-	strcpy_P(buf2,hdr_div);						/* </div> terminated */
-	sprintf(buf3, buf2,"SLF IpComm Login");
+	/* Start the table*/                                                    //   ___________________________________
+	plenc=fill_tcp_data_p(buf,plenc,table_start);                           //   |                                 |
+	
+	
+	//printf("plen=%d\n",plenc);
+	strcpy_P(buf2,table_line_ip_cfg);
+	sprintf(buf3, buf2,
+			2,5);
 	plenc=fill_tcp_data(buf,plenc,buf3);
+	//printf("plen=%d\n",plenc);
 	
-	plenc=fill_tcp_data_p(buf,plenc,login_form);
-	plenc=fill_tcp_data_p(buf,plenc,submit_reset_button);
+	strcpy_P(buf2,table_line_port_cfg);						
+	sprintf(buf3, buf2,167);
+	plenc=fill_tcp_data(buf,plenc,buf3);
+		
+
+	
+	plenc=fill_tcp_data_p(buf,plenc,table_end);
+	
+
 	
 	plenc=fill_tcp_data_p(buf,plenc,footer_div); 
 	plenc=fill_tcp_data_p(buf,plenc,end_div);	 //div1
 	plenc=fill_tcp_data_p(buf,plenc,end_form);   
 	
-	//clear_buf(plen);
-	//plenc=fill_tcp_data_p(buf,plenc,config_html);
-	
-	//printf("plenc=%d\n",plenc);
-	//plen=fill_tcp_data(buf,plen,"\0");
-	//plen=fill_tcp_data_p(buf,plen,'\0'); //EOF
-	
-	//plenc=fill_tcp_data_p(buf,plenc,main_div);    //div1
-	//plenc=fill_tcp_data_p(buf,plenc,hdr_div);     /* </div> terminated */
-	//plenc=fill_tcp_data_p(buf,plenc,menu_div);    /* </div> terminated */
-	
-//	plenc=fill_tcp_data_p(buf,plenc,end_div);     //div1
-	
-	//clear_buf(plenc+1);
 
+printf("plen=%d\n",plenc);
 	return(plenc);
 }
 
@@ -186,6 +192,7 @@ uint16_t print_webpage(uint8_t * buf)
 
 	return(plen);
 }
+
 
 // analyse the url given
 // The string passed to this function will look like this:

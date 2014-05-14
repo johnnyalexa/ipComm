@@ -52,14 +52,15 @@ const char content_div[] PROGMEM =QUOTE(
 ***************************************************/
 const char footer_div[] PROGMEM =QUOTE(
 <div id="ft" style="background-color:#FFA500;clear:both;text-align:center;">
-Copyright www.slf.ro</div>
+Copyright 2014 SENSOLIGHT - www.slf.ro</div>
 );
 
 /**************************************************
 *	<div> table </div>
 ***************************************************/
 const char table_start[] PROGMEM =QUOTE(
-<table border="1" style="width:350px">
+<br>
+<table border="1" align="center"> //style="width:350px">
 );
 const char table_end[] PROGMEM =QUOTE(
 </table>
@@ -89,6 +90,42 @@ const char table_line_Port[] PROGMEM =QUOTE(
 </tr>
 );
 
+const char table_line_mac_cfg[] PROGMEM =QUOTE(
+<tr>
+<td>MAC Address</td>
+<td>%02X:%02X:%02X:%02X:
+<input NAME="mac4" id="mac4" TYPE="text" SIZE="1" MAXLENGTH="2" VALUE="%02X">:
+<input NAME="mac5" id="mac5" TYPE="text" SIZE="1" MAXLENGTH="2" VALUE="%02X">
+</td>
+</tr>  
+);
+
+const char table_line_ip_cfg[] PROGMEM =QUOTE(
+<tr>
+<td>Server IP</td>
+<td>
+<input NAME="ip0" id="ip0" TYPE="text" SIZE="1" MAXLENGTH="3" VALUE="%d">
+<input NAME="ip1" id="ip1" TYPE="text" SIZE="1" MAXLENGTH="3" VALUE="%d">
+</td>
+</tr>
+);
+
+/*
+.<input NAME="ip1" id="ip1" TYPE="text" SIZE="1" MAXLENGTH="3" VALUE="%d">
+.<input NAME="ip2" id="ip2" TYPE="text" SIZE="1" MAXLENGTH="3" VALUE="%d">
+<input NAME="ip3" id="ip3" TYPE="text" SIZE="1" MAXLENGTH="3" VALUE="%d">
+
+*/
+
+const char table_line_port_cfg[] PROGMEM =QUOTE(
+<tr>
+<td>Server Port</td>
+<td>
+<input NAME="port" id="port" TYPE="text" SIZE="1" MAXLENGTH="5" VALUE="%d">
+</td>
+</tr>
+);
+
 /**************************************************
 *	Form
 ***************************************************/
@@ -105,7 +142,7 @@ const char end_form[] PROGMEM =QUOTE(
 ***************************************************/
 const char login_form[] PROGMEM =QUOTE(
 <br>
-<table border="1" cellspacing="1" cellpadding="0">
+<table border="1" cellspacing="1" cellpadding="0" align="center">
 <tr>
 <td>&nbsp;Username:&nbsp;</td>
 <td>
@@ -126,11 +163,23 @@ const char login_form[] PROGMEM =QUOTE(
 ***************************************************/
 const char submit_reset_button[] PROGMEM =QUOTE(
 <p>
-<input TYPE="submit" VALUE="Login">&nbsp;
-<input TYPE="reset" VALUE="Reset">
+<input TYPE="submit" VALUE="Login" style="margin-left:130px">
+<input TYPE="reset" VALUE="Reset" style="margin-left:125px">
 </p>
 );
 
+/**************************************************
+*	Buttons for reset and Submit
+***************************************************/
+/*
+const char submit_reset_button[] PROGMEM =QUOTE(
+<p>
+<input TYPE="submit" VALUE="Login" style="margin-left:130px">
+<input TYPE="reset" VALUE="Reset" style="margin-left:125px">
+</p>
+);
+
+*/
 
 
 

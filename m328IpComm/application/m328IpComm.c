@@ -42,7 +42,7 @@ int main(void)
 				
 	//Init specific controller peripherals
 	MCU_Init();
-	
+	printf("MCU Start\n");
 	plen = Get_DHCP_Config();
 
 	
@@ -207,8 +207,9 @@ int main(void)
             }
  
            // the main page: the login page
-		//   gPlen = print_webpage_login(buf);
-           gPlen=print_webpage(buf);
+		   gPlen = print_webpage_config(buf);
+		 //  gPlen = print_webpage_login(buf);
+        //   gPlen=print_webpage(buf);
 														
 SENDTCP:
 	www_server_reply(buf,gPlen); // send data
@@ -242,7 +243,7 @@ UDP:
 #endif				
 		
     } // End of main loop
-	
+	printf("Reset AVR\n");
 // If we get here, we need to restart
 Reset_AVR();	
 	

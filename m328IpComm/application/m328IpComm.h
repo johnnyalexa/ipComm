@@ -20,7 +20,7 @@ typedef struct protocol_config{
 #define WEBSERVER_VHOST "senso-trafic.no-ip.org"
 
 // packet buffer
-#define BUFFER_SIZE 650
+#define BUFFER_SIZE 1350
 
 //// listen port for udp
 #define MYUDPPORT 4601

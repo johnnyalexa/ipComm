@@ -21,6 +21,9 @@ extern const char table_end[];
 extern const char table_line_MAC[];
 extern const char table_line_IP[];
 extern const char table_line_Port[];
+extern const char table_line_mac_cfg[];
+extern const char table_line_ip_cfg[];
+extern const char table_line_port_cfg[];
 
 extern const char form_post[];
 extern const char end_form[];
