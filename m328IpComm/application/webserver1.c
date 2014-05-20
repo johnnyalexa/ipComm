@@ -74,18 +74,69 @@ uint16_t print_webpage_config(uint8_t * buf)
 	/* Start the table*/                                                    //   ___________________________________
 	plenc=fill_tcp_data_p(buf,plenc,table_start);                           //   |                                 |
 	
-	
+//____________________________________________________________________________________________________________________//	
+	plenc=fill_tcp_data_p(buf,plenc,table_tr_start);						//	<tr>
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_start);				//	<td>
+			strcpy_P(buf2,table_line_string);
+			sprintf(buf3, buf2,"MAC Address	");								// | Mac Address |	
+			plenc=fill_tcp_data(buf,plenc,buf3);
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_stop);				//	</td>
+//____________________________________________________________________________________________________________________//	
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_start);				//	<td>
+			strcpy_P(buf2,table_line_mac_cfg_start);
+			sprintf(buf3, buf2,mymac[0],mymac[1],mymac[2],mymac[3]);		// |02:54:23:43 |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+			strcpy_P(buf2,table_input_hex_cfg);
+			sprintf(buf3, buf2,"mac4","mac4",mymac[4]);		                    // |:01 |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+			strcpy_P(buf2,table_input_hex_cfg);
+			sprintf(buf3, buf2,"mac5","mac5",mymac[5]);		                    // |:02 |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_stop);				//	</td>
+	plenc=fill_tcp_data_p(buf,plenc,table_tr_stop);							//	</tr>
+//____________________________________________________________________________________________________________________//	
+//printf("plenc=%d",plenc);
+	plenc=fill_tcp_data_p(buf,plenc,table_tr_start);						//	<tr>
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_start);				//	<td>
+			strcpy_P(buf2,table_line_string);
+			sprintf(buf3, buf2,"Server IP");								// | Server IP |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_stop);				//	</td>
+//____________________________________________________________________________________________________________________//
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_start);				//	<td>		
+			strcpy_P(buf2,table_input_dec_cfg);
+			sprintf(buf3, buf2,"ip0","ip0",otherside_www_ip[0]);		    // |192. |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+				plenc=fill_tcp_data(buf,plenc,".");
+			strcpy_P(buf2,table_input_dec_cfg);
+			sprintf(buf3, buf2,"ip1","ip1",otherside_www_ip[1]);		    // |168. |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+				plenc=fill_tcp_data(buf,plenc,".");
+			strcpy_P(buf2,table_input_dec_cfg);
+			sprintf(buf3, buf2,"ip2","ip2",otherside_www_ip[2]);		    // |0. |
+			plenc=fill_tcp_data(buf,plenc,buf3);
+				plenc=fill_tcp_data(buf,plenc,".");
+			strcpy_P(buf2,table_input_dec_cfg);
+			sprintf(buf3, buf2,"ip3","ip3",otherside_www_ip[3]);		    // |111 |
+			plenc=fill_tcp_data(buf,plenc,buf3);								
+		
+		plenc=fill_tcp_data_p(buf,plenc,table_line_td_stop);				//	</td>		
+	plenc=fill_tcp_data_p(buf,plenc,table_tr_stop);							//	</tr>
+
+	/*
 	//printf("plen=%d\n",plenc);
 	strcpy_P(buf2,table_line_ip_cfg);
 	sprintf(buf3, buf2,
-			2,5);
-	plenc=fill_tcp_data(buf,plenc,buf3);
+			otherside_www_ip[0],
+			otherside_www_ip[1],
+			otherside_www_ip[2]);
+	plenc=fill_tcp_data(buf,plenc,buf3); */
 	//printf("plen=%d\n",plenc);
 	
-	strcpy_P(buf2,table_line_port_cfg);						
+/*	strcpy_P(buf2,table_line_port_cfg);						
 	sprintf(buf3, buf2,167);
 	plenc=fill_tcp_data(buf,plenc,buf3);
-		
+	*/	
 
 	
 	plenc=fill_tcp_data_p(buf,plenc,table_end);

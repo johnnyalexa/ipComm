@@ -135,7 +135,7 @@ int main(void)
 		}
 		
 			//strncpy(str,(char *)&(buf[dat_p]),sizeof(str));						
-			printf("buf[dat_p]=%s\n",(char *)&(buf[dat_p]));
+			//printf("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
 		
 		/*if (strncmp("GET ",(char *)&(buf[dat_p]),4)==0){
 			//We have a GET request
@@ -161,8 +161,8 @@ int main(void)
           gPlen=http200ok(buf);
           gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
           goto SENDTCP;
-          }
-		  
+          }else
+			 printf("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
 		  
 		// Cut the size for security reasons. If we are almost at the
 		// end of the buffer then there is a zero but normally there is
@@ -208,6 +208,7 @@ int main(void)
  
            // the main page: the login page
 		   gPlen = print_webpage_config(buf);
+		   printf("gplen=%d\n",gPlen);
 		 //  gPlen = print_webpage_login(buf);
         //   gPlen=print_webpage(buf);
 														

@@ -25,6 +25,19 @@ extern const char table_line_mac_cfg[];
 extern const char table_line_ip_cfg[];
 extern const char table_line_port_cfg[];
 
+extern const char table_tr_start[];
+extern const char table_tr_stop[];
+
+extern const char table_line_td_start[];
+extern const char table_line_td_stop[];
+
+extern const char table_line_string[];
+extern const char table_line_mac_cfg_start[];
+
+extern const char table_input_hex_cfg[];
+extern const char table_input_dec_cfg[];
+
+
 extern const char form_post[];
 extern const char end_form[];
 extern const char login_form[];
