@@ -42,7 +42,7 @@ int main(void)
 				
 	//Init specific controller peripherals
 	MCU_Init();
-	printf("MCU Start\n");
+	SYS_LOG("MCU Start\n");
 	plen = Get_DHCP_Config();
 
 	
@@ -76,7 +76,7 @@ int main(void)
 	
 	
 
-	printf("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
+	SYS_LOG("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 			
 	//init the ethernet/ip layer:
 	init_udp_or_www_server(mymac,myip);
@@ -162,7 +162,7 @@ int main(void)
           gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
           goto SENDTCP;
           }else
-			 printf("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
+			 SYS_LOG("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
 		  
 		// Cut the size for security reasons. If we are almost at the
 		// end of the buffer then there is a zero but normally there is
@@ -197,18 +197,19 @@ int main(void)
 	        goto SENDTCP;
             }
 		if(cmd == 5){
-			gPlen=print_webpage_login(buf);
+			
+			//gPlen=print_webpage_login(buf);
 			goto SENDTCP;
 		}
         if (cmd==10){
 	       // gPlen is already set
-		   gPlen=print_webpage_config(buf);
+		 //  gPlen=print_webpage_config(buf);
 	        goto SENDTCP;
             }
  
            // the main page: the login page
-		   gPlen = print_webpage_config(buf);
-		   printf("gplen=%d\n",gPlen);
+		   gPlen = print_webpage(buf);
+		   SYS_LOG("gplen=%d\n",gPlen);
 		 //  gPlen = print_webpage_login(buf);
         //   gPlen=print_webpage(buf);
 														
@@ -231,7 +232,7 @@ UDP:
 			payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
 			// you must sent a string starting with v
 			
-			printf("Enter your response here:\n");
+			SYS_LOG("Enter your response here:\n");
 			scanf("%s",str);
 		//	printf("%s",str);
 			//strcpy(str,"Sensolight! usage: ver");
@@ -244,7 +245,7 @@ UDP:
 #endif				
 		
     } // End of main loop
-	printf("Reset AVR\n");
+	SYS_LOG("Reset AVR\n");
 // If we get here, we need to restart
 Reset_AVR();	
 	

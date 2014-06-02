@@ -54,6 +54,7 @@ uint16_t http200ok(uint8_t * buf)
 	return(fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nPragma: no-cache\r\n\r\n")));
 }
 
+#if 0 //unused
 uint16_t print_webpage_config(uint8_t * buf)
 {
 	uint16_t plenc=0;
@@ -148,7 +149,7 @@ uint16_t print_webpage_config(uint8_t * buf)
 	plenc=fill_tcp_data_p(buf,plenc,end_form);   
 	
 
-printf("plen=%d\n",plenc);
+SYS_LOG("plen=%d\n",plenc);
 	return(plenc);
 }
 
@@ -177,7 +178,7 @@ uint16_t print_webpage_login(uint8_t * buf)
 	
 	return plenl;	
 }
-
+#endif
 
 										  
 // main web page
@@ -186,61 +187,80 @@ uint16_t print_webpage(uint8_t * buf)
 	uint16_t plen=0;
 	char buf2[200];
 	char buf3[200];
-	//clear_buf();
 	
 	plen=http200ok(buf);
 	
-	plen=fill_tcp_data_p(buf,plen,main_div);    //div1
+	plen=fill_tcp_data_p(buf,plen,main_div);				//div1
 	
-	strcpy_P(buf2,hdr_div);						/* </div> terminated */
+	strcpy_P(buf2,hdr_div);									// </div> terminated 
 	sprintf(buf3, buf2,"IpComm Ethernet Communicator");
 	plen=fill_tcp_data(buf,plen,buf3);
 	
-	plen=fill_tcp_data_p(buf,plen,menu_div);    /* </div> terminated */
 	plen=fill_tcp_data_p(buf,plen,content_div); //div2
 	
-
-	plen=fill_tcp_data_p(buf,plen,table_start); 
-	
+	// --------------  TABLE START ------------------ //	
+	plen=fill_tcp_data_p(buf,plen,table_start);
+	// --------------  MAC ADDRESS ------------------ //
+	plen=fill_tcp_data_p(buf,plen,table_tr_start);			// <tr>	||
+	strcpy_P(buf2,table_line_string);						// | string | 
+	sprintf(buf3, buf2,"MAC Address");
+	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_MAC);
-	sprintf(buf3, buf2,"MAC Address",
-			mymac[0],mymac[1],mymac[2],mymac[3],mymac[4],mymac[5]);
+	sprintf(buf3, buf2,	mymac[0],mymac[1],mymac[2],mymac[3],mymac[4],mymac[5]);
 	plen=fill_tcp_data(buf,plen,buf3);
-	
+	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||
+	// --------------  IP ADDRESS  ------------------ //
+	plen=fill_tcp_data_p(buf,plen,table_tr_start);			// <tr>	||
+	strcpy_P(buf2,table_line_string);						// | string |
+	sprintf(buf3, buf2,"IP Address");
+	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_IP);
-	sprintf(buf3, buf2,"IP Address",
-			myip[0],myip[1],myip[2],myip[3]);
+	sprintf(buf3, buf2,myip[0],myip[1],myip[2],myip[3]);
 	plen=fill_tcp_data(buf,plen,buf3);
-	
+	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||
+	// --------------    NETMASK   ------------------ //	
+	plen=fill_tcp_data_p(buf,plen,table_tr_start);			// <tr>	||
+	strcpy_P(buf2,table_line_string);						// | string |
+	sprintf(buf3, buf2,"Netmask");
+	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_IP);
-	sprintf(buf3, buf2,"Netmask",
-			netmask[0],netmask[1],netmask[2],netmask[3]);
+	sprintf(buf3, buf2,netmask[0],netmask[1],netmask[2],netmask[3]);
 	plen=fill_tcp_data(buf,plen,buf3);
-	
+	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||		
+	// --------------  GW IP ADDRESS  ---------------- //
+	plen=fill_tcp_data_p(buf,plen,table_tr_start);			// <tr>	||
+	strcpy_P(buf2,table_line_string);						// | string |
+	sprintf(buf3, buf2,"Gateway");
+	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_IP);
-	sprintf(buf3, buf2,"Gateway IP",
-			gwip[0],gwip[1],gwip[2],gwip[3]);
+	sprintf(buf3, buf2,gwip[0],gwip[1],gwip[2],gwip[3]);
 	plen=fill_tcp_data(buf,plen,buf3);
-	
+	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||		
+	// ------------  Server IP ADDRESS  --------------- //
+	plen=fill_tcp_data_p(buf,plen,table_tr_start);			// <tr>	||
+	strcpy_P(buf2,table_line_string);						// | string |
+	sprintf(buf3, buf2,"Server IP");
+	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_IP);
-	sprintf(buf3, buf2,"Server IP",
-			otherside_www_ip[0],otherside_www_ip[1],otherside_www_ip[2],otherside_www_ip[3]);
+	sprintf(buf3, buf2,otherside_www_ip[0],otherside_www_ip[1],otherside_www_ip[2],otherside_www_ip[3]);
 	plen=fill_tcp_data(buf,plen,buf3);
-	
+	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||		
+	// ---------------  Server Port  ----------------- //
+	plen=fill_tcp_data_p(buf,plen,table_tr_start);			// <tr>	||
+	strcpy_P(buf2,table_line_string);						// | string |
+	sprintf(buf3, buf2,"Server Port");
+	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_Port);
 	sprintf(buf3, buf2,"Server Port",MYTCPPORT);
 	plen=fill_tcp_data(buf,plen,buf3);
-	
+	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||
+	// ---------------  TABLE END  ------------------- //	
 	plen=fill_tcp_data_p(buf,plen,table_end); 
 	
 	plen=fill_tcp_data_p(buf,plen,end_div);  //div2
 	plen=fill_tcp_data_p(buf,plen,footer_div); 
 	plen=fill_tcp_data_p(buf,plen,end_div);  //div1
 	
-	
-	//plen=fill_tcp_data_p(buf,plen,PSTR("\0")); //EOF
-	
-
 	return(plen);
 }
 

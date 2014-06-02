@@ -12,7 +12,13 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 
+#define USE_LOGGING			(0xFF)
 
+#ifdef USE_LOGGING
+#define SYS_LOG(...)	printf(__VA_ARGS__)
+#else
+#define SYS_LOG(...)	{}
+#endif //USE_LOGGING
 
 #define USE_DEFAULT         (0xFF)
 #define USE_STATIC 			(0x0A)

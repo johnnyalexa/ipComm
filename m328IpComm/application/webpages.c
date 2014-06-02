@@ -43,8 +43,8 @@ const char menu_div[] PROGMEM =QUOTE(
 *	<div>  content </div>
 ***************************************************/
 const char content_div[] PROGMEM =QUOTE(
-<div id="content" style="background-color:#EEEEEE;height:185px;width:350px;float:left;">
-<center><b>Current config:</b></center>
+<div id="content" style="background-color:#EEEEEE;height:200px;width:500px;float:left;">
+<center><b> Current config: </b></center>
 );
 
 /**************************************************
@@ -59,7 +59,7 @@ Copyright 2014 SENSOLIGHT - www.slf.ro</div>
 *	<div> table </div>
 ***************************************************/
 const char table_start[] PROGMEM =QUOTE(
-<br>
+\n
 <table border="1" align="center"> //style="width:350px">
 );
 const char table_end[] PROGMEM =QUOTE(
@@ -77,7 +77,7 @@ const char table_tr_stop[] PROGMEM = QUOTE(
 );
 
 const char table_line_string[] PROGMEM = QUOTE(
-%s
+<td>%s</td>
 );
 
 const char table_line_MAC[] PROGMEM =QUOTE(
