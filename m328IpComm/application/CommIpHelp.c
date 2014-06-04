@@ -5,14 +5,22 @@
  *  Author: John
  */ 
 #include "m328IpComm.h"
+#include "../drivers/drivers.h"
 #include "../enc28j60_tcp_ip_stack/include/timeout.h"
 #include <avr/wdt.h>
 
 
+ipComm_config_t defaultConfig={
+	.local_mac={0x00, 0x52,0x47,0x46,0x00,0x01},
+	.server_ip={0,0,0,0},
+	.server_port=0,
+	.status=0	
+};
+
 /* ***************************************************************** */
 //Default config to use if no other config exists
 //                          x     S    L    F    x    x
-uint8_t default_mac[6] = {0x00, 0x52,0x47,0x46,0x00,0x01};
+uint8_t default_mac[6] = {0x00, 0x52,0x47,0x46,0x01,0x01};
 uint8_t default_ip[4] = {192,168,0,30};
 /* ***************************************************************** */
 //
@@ -93,7 +101,7 @@ void send_tcp_data(void){
 
 void Ethernet_Init(void){
 	/*initialize enc28j60*/
-	enc28j60Init(mymac);
+	enc28j60Init(currentConfig.local_mac);
 	enc28j60clkout(2); // change clkout from 6.25MHz to 12.5MHz
 	_delay_loop_1(0); // 60us
 	
@@ -115,12 +123,12 @@ uint16_t Get_DHCP_Config(void){
 	uint8_t rval= 0;
 	uint16_t plen;
 	//write mac address in the ethernet controller
-	init_mac(mymac);
+	init_mac(currentConfig.local_mac);
 	
 while(rval==0){
 	plen=enc28j60PacketReceive(BUFFER_SIZE, buf);
 	buf[BUFFER_SIZE]='\0';
-	rval=packetloop_dhcp_initial_ip_assignment(buf,plen,mymac[5]);
+	rval=packetloop_dhcp_initial_ip_assignment(buf,plen,currentConfig.local_mac[5]);
 	}
 	
 	// we have an IP:

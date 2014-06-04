@@ -15,10 +15,11 @@
 #define CONFIG_LEN		sizeof(ipComm_config_t)
 #define EEPROM_LOOP		(EEPROM_LEN/CONFIG_LEN)
 
-#define STATUS_START_ADDRESS (CONFIG_LEN - 2)
-#define FIRST_USE_LOCATION 1
+#define STATUS_START_ADDRESS (CONFIG_LEN - 1)
+#define FIRST_USE_LOCATION 0
 
 /* Shows current buffer position */
+static uint8_t FirstRound = 0;
 static uint8_t ConfigIndex;
 static uint8_t StatusBufferValue;
 
@@ -37,11 +38,19 @@ uint8_t get_loop(void){
 *------------------------------------------------------------*/
 uint8_t NVM_GetCurrentPosition(void){
 	uint8_t U8_value1,U8_value2;
-	uint8_t U8_position;
+	uint8_t U8_position = 0;
 	
 	//Read first status byte	
 	U8_value1 = eeprom_read_byte((const uint8_t *)STATUS_START_ADDRESS);
 	
+	if(U8_value1 == 0xff){
+		SYS_LOG("First location use in eeprom\n");
+			ConfigIndex = U8_position;
+			StatusBufferValue = 1;
+			FirstRound = 1;
+			return U8_position;
+		}
+		
 	for(U8_position=0;U8_position<EEPROM_LOOP-1;U8_position++){
 		//Read next status byte
 		U8_value2 = eeprom_read_byte((const uint8_t *)(STATUS_START_ADDRESS + ((U8_position+1)*CONFIG_LEN)));
@@ -49,7 +58,7 @@ uint8_t NVM_GetCurrentPosition(void){
 		if(U8_value2 == (uint8_t)(U8_value1+1)){
 				//Change the values and continue the loop
 				U8_value1 = U8_value2;
-				continue;
+			//	continue;
 			}else{
 				ConfigIndex = U8_position;
 				StatusBufferValue = U8_value1;
@@ -66,13 +75,22 @@ static void IncrementLocation(void){
 	StatusBufferValue = (uint8_t)(StatusBufferValue + 1);		
 }
 
-void NVM_LoadConfig(ipComm_config_t *data){
+int NVM_LoadConfig(ipComm_config_t *data){
+	int rc = 0;
+	rc = NVM_GetCurrentPosition();
 	eeprom_read_block(data,(void *)(ConfigIndex*CONFIG_LEN),CONFIG_LEN);
+	if(data->local_mac[0]==0xff)
+		rc = -1;
+	return rc;
 }
 
 void NVM_SaveConfig(ipComm_config_t *data){
 	//Save the data to a new location
-	IncrementLocation();
+	//Save the data to a new location
+	if (FirstRound != 1){
+		IncrementLocation();
+	}else
+		FirstRound = 0;
 	data->status=StatusBufferValue;
 	eeprom_write_block((uint8_t *)data,(void *)(ConfigIndex*CONFIG_LEN),CONFIG_LEN);
 }

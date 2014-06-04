@@ -11,6 +11,8 @@
 
 #include <avr/io.h>
 #include <avr/wdt.h>
+#include <stdio.h>
+
 
 #define USE_LOGGING			(0xFF)
 
@@ -20,27 +22,13 @@
 #define SYS_LOG(...)	{}
 #endif //USE_LOGGING
 
-#define USE_DEFAULT         (0xFF)
-#define USE_STATIC 			(0x0A)
-#define USE_DHCP			(0x50)
 
-typedef struct eth_config{
-	uint8_t local_mac[6];
-	uint8_t local_ip[4];
-	uint8_t netmask[4];
-	uint8_t local_gw[4];
-}eth_config_t;
-
-typedef struct disp_config{
-	uint8_t  ip[4];
-	uint16_t port;
-	uint8_t  disp_dns[30];
-}disp_config_t;
 
 typedef struct ipComm_config{
-	eth_config_t	net;
-	disp_config_t	disp;
-	uint8_t			status;
+	uint8_t			local_mac[6];	//mac address of current device
+	uint8_t			server_ip[4];	//server ip address to report 
+	uint16_t		server_port;	//tcp server port
+	uint8_t			status;			//status value for eeprom loop
 }ipComm_config_t;
 
 
@@ -58,7 +46,7 @@ void USART_print(char * text);
 
 /* ******* NVM ***************** */
 uint8_t NVM_GetCurrentPosition(void);
-void NVM_LoadConfig(ipComm_config_t *data);
+int NVM_LoadConfig(ipComm_config_t *data);
 void NVM_SaveConfig(ipComm_config_t *data);
 
 #endif /* DRIVERS_H_ */

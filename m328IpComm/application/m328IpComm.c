@@ -16,42 +16,59 @@
 #include "../drivers/drivers.h"
 #include "../enc28j60_tcp_ip_stack/include/websrv_help_functions.h"
 
+#include <util/delay.h>
+
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 
 
 
-static ipComm_config_t eep_config;
+ipComm_config_t currentConfig;
 
 
 
 int main(void)
 {
 	uint16_t dat_p,plen;
-	//uint8_t payloadlen=0;
-	//char str[100];
-	//uint8_t rval;
-	//uint16_t i=0;
-	//uint8_t fd;
 	
 	int8_t cmd;
 	static uint16_t gPlen;
+	int config_rc = 0;
 	
-	
-	
-				
+					
 	//Init specific controller peripherals
 	MCU_Init();
+	//ms
+	_delay_ms(1000);
 	SYS_LOG("MCU Start\n");
+	
+	//NVM_GetCurrentPosition();
+	config_rc = NVM_LoadConfig( &currentConfig );
+		
+	if(config_rc < 0){
+		memcpy(&currentConfig,&defaultConfig,sizeof(ipComm_config_t));
+		NVM_SaveConfig(&currentConfig);
+		SYS_LOG("Config default\n");
+	};
+		
+	SYS_LOG("Config loaded\n");
+	SYS_LOG("My mac=%02x:%02x:%02x:%02x:%02x:%02x\n",
+				currentConfig.local_mac[0],
+				currentConfig.local_mac[1],
+				currentConfig.local_mac[2],
+				currentConfig.local_mac[3],
+				currentConfig.local_mac[4],
+				currentConfig.local_mac[5])	;
+	Ethernet_Init();	
+	Ethernet_Leds_Init();		
 	plen = Get_DHCP_Config();
-
 	
 	while(get_mac_with_arp_wait()){
 		// to process the ARP reply we must call the packetloop
 		plen=enc28j60PacketReceive(BUFFER_SIZE, buf);
 		packetloop_arp_icmp_tcp(buf,plen);
 	}
-
+	SYS_LOG("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
 
 #if 0 //ramane daca vrem dns
 	if (string_is_ipv4(WEBSERVER_VHOST)){
@@ -62,8 +79,7 @@ int main(void)
 	}
 #endif
 	
-	NVM_GetCurrentPosition();
-	NVM_LoadConfig( &eep_config );
+
 	
 //	while(1)
 	//	printf("loop:%d.%d.%d.%d\n",
@@ -76,10 +92,10 @@ int main(void)
 	
 	
 
-	SYS_LOG("My IP=%d.%d.%d.%d\n",myip[0],myip[1],myip[2],myip[3]);
+	
 			
 	//init the ethernet/ip layer:
-	init_udp_or_www_server(mymac,myip);
+	init_udp_or_www_server(currentConfig.local_mac,myip);
 	www_server_port(MYWWWPORT);
 			
 			

@@ -11,11 +11,8 @@
 #include "../drivers/drivers.h"
 #include "../enc28j60_tcp_ip_stack/include/tcp_ip_stack.h"
 
-typedef struct protocol_config{
-	uint8_t ip_protocol;
-	
-	}protocol_config_t;
-
+extern ipComm_config_t defaultConfig;
+extern ipComm_config_t currentConfig;
 
 #define WEBSERVER_VHOST "senso-trafic.no-ip.org"
 
@@ -24,8 +21,10 @@ typedef struct protocol_config{
 
 //// listen port for udp
 #define MYUDPPORT 4601
-#define MYTCPPORT 55056
 #define MYWWWPORT 80
+
+
+#define MYTCPPORT 55056
 
 #define TRANS_NUM_GWMAC 1
 #define TRANS_NUM_WEBMAC 2
