@@ -17,7 +17,7 @@ extern ipComm_config_t currentConfig;
 #define WEBSERVER_VHOST "senso-trafic.no-ip.org"
 
 // packet buffer
-#define BUFFER_SIZE 1350
+#define BUFFER_SIZE 1150
 
 //// listen port for udp
 #define MYUDPPORT 4601

@@ -45,6 +45,7 @@ C_SRCS +=  \
 ../application/webpages.c \
 ../application/webpage_help.c \
 ../application/webserver1.c \
+../drivers/GPIO.c \
 ../drivers/MCU.c \
 ../drivers/NVM.c \
 ../drivers/SPI.c \
@@ -70,6 +71,7 @@ application/m328IpComm.o \
 application/webpages.o \
 application/webpage_help.o \
 application/webserver1.o \
+drivers/GPIO.o \
 drivers/MCU.o \
 drivers/NVM.o \
 drivers/SPI.o \
@@ -88,6 +90,7 @@ application/m328IpComm.o \
 application/webpages.o \
 application/webpage_help.o \
 application/webserver1.o \
+drivers/GPIO.o \
 drivers/MCU.o \
 drivers/NVM.o \
 drivers/SPI.o \
@@ -106,6 +109,7 @@ application/m328IpComm.d \
 application/webpages.d \
 application/webpage_help.d \
 application/webserver1.d \
+drivers/GPIO.d \
 drivers/MCU.d \
 drivers/NVM.d \
 drivers/SPI.d \
@@ -124,6 +128,7 @@ application/m328IpComm.d \
 application/webpages.d \
 application/webpage_help.d \
 application/webserver1.d \
+drivers/GPIO.d \
 drivers/MCU.d \
 drivers/NVM.d \
 drivers/SPI.d \
@@ -147,6 +152,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

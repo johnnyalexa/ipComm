@@ -5,6 +5,7 @@
  *  Author: John
  */ 
 
+// Std include files
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
@@ -12,36 +13,42 @@
 #include <ctype.h>
 #include <stdio.h>
 
+// Local include files
 #include "m328IpComm.h"
 #include "../drivers/drivers.h"
 #include "../enc28j60_tcp_ip_stack/include/websrv_help_functions.h"
 
 #include <util/delay.h>
-
 #define __PROG_TYPES_COMPAT__
 #include <avr/pgmspace.h>
 
 
-
+// Current config structure
 ipComm_config_t currentConfig;
 
+void update_info(void);
+void update_info(void){
+	memcpy(mymac,currentConfig.local_mac,sizeof(mymac));
+	memcpy(server_ip,currentConfig.server_ip,sizeof(server_ip));
+}
 
-
+//Main application
 int main(void)
 {
 	uint16_t dat_p,plen;
-	
 	int8_t cmd;
 	static uint16_t gPlen;
 	int config_rc = 0;
 	
-					
+	int run_type;					
 	//Init specific controller peripherals
 	MCU_Init();
 	//ms
 	SYS_LOG("MCU Reset\n");
 	_delay_ms(3000);
 	SYS_LOG("MCU Start\n");
+	
+	run_type = GetResetSw();
 	
 	//NVM_GetCurrentPosition();
 	config_rc = NVM_LoadConfig( &currentConfig );
@@ -51,9 +58,14 @@ int main(void)
 		NVM_SaveConfig(&currentConfig);
 		SYS_LOG("Config default\n");
 	};
-	memcpy(mymac,currentConfig.local_mac,sizeof(mymac));
-	memcpy(server_ip,currentConfig.server_ip,sizeof(server_ip));
-
+	
+	
+	if(run_type)	
+		SYS_LOG("cfg\n");
+		else
+			SYS_LOG("run\n");
+	
+/*
 	SYS_LOG("Config loaded\n");
 	SYS_LOG("My mac=%02x:%02x:%02x:%02x:%02x:%02x\n",
 				currentConfig.local_mac[0],
@@ -63,7 +75,12 @@ int main(void)
 				currentConfig.local_mac[4],
 				currentConfig.local_mac[5])	;
 				
-				
+	SYS_LOG("Server : %d.%d.%d.%d:%d\n",
+				currentConfig.server_ip[0],
+				currentConfig.server_ip[1],
+				currentConfig.server_ip[2],
+				currentConfig.server_ip[3],
+				currentConfig.server_port);		*/	
 				
 	Ethernet_Init();	
 	Ethernet_Leds_Init();		
@@ -85,25 +102,11 @@ int main(void)
 	}
 #endif
 	
-
-	
-//	while(1)
-	//	printf("loop:%d.%d.%d.%d\n",
-		//eep_config.net.local_ip[0],eep_config.net.local_ip[1],
-		//eep_config.net.local_ip[2],eep_config.net.local_ip[3]);
-	//	printf("size = %d\n",sizeof(ipComm_config_t));
-	
-	//while(1)
-		//printf("My IP=%d.%d.%d.%d\n",otherside_www_ip[0],otherside_www_ip[1],otherside_www_ip[2],otherside_www_ip[3]);
-	
-	
-
-	
-			
+// config run type
+//if(run_type !=0){
 	//init the ethernet/ip layer:
 	init_udp_or_www_server(currentConfig.local_mac,myip);
 	www_server_port(MYWWWPORT);
-			
 			
 // Main loop of the program		
     while(1)
@@ -184,7 +187,8 @@ int main(void)
           gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
           goto SENDTCP;
           }else
-			 SYS_LOG("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
+			SYS_LOG("dat_p=%d\n",dat_p);
+			 //SYS_LOG("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
 		  
 		// Cut the size for security reasons. If we are almost at the
 		// end of the buffer then there is a zero but normally there is
@@ -230,6 +234,7 @@ int main(void)
             }
  
            // the main page: the login page
+		   update_info();
 		   gPlen = print_webpage(buf);
 		   SYS_LOG("gplen=%d\n",gPlen);
 		 //  gPlen = print_webpage_login(buf);
@@ -267,6 +272,10 @@ UDP:
 #endif				
 		
     } // End of main loop
+//}else{
+//Normal run tpe	
+//SYS_LOG("else\n");	
+//}
 	SYS_LOG("Reset AVR\n");
 // If we get here, we need to restart
 Reset_AVR();	

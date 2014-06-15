@@ -12,6 +12,8 @@ application\webpage_help.c
 
 application\webserver1.c
 
+drivers\GPIO.c
+
 drivers\MCU.c
 
 drivers\NVM.c

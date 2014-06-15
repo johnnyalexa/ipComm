@@ -185,9 +185,10 @@ uint16_t print_webpage_login(uint8_t * buf)
 uint16_t print_webpage(uint8_t * buf)
 {
 	uint16_t plen=0;
-	char buf2[200];
-	char buf3[200];
-	int srv_port = currentConfig.server_port;
+	char buf2[150];
+	char buf3[150];
+	static int srv_port;
+	srv_port = currentConfig.server_port;
 	
 	plen=http200ok(buf);
 	

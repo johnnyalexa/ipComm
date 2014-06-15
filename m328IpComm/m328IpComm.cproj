@@ -136,6 +136,9 @@
     <Compile Include="drivers\drivers.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="drivers\GPIO.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="drivers\MCU.c">
       <SubType>compile</SubType>
     </Compile>

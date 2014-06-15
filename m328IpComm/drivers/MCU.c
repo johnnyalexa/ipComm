@@ -30,6 +30,7 @@ void MCU_Init(void){
 	MCU_Clk_Init();
 	// Wait Clk to establish
 	_delay_loop_1(0); // 60us
+	GPIO_init();
 	//Init ENC28J60 ethernet controller
 	Ethernet_Init();
 	//Init timer

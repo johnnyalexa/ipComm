@@ -10,7 +10,9 @@
 #include "drivers.h"
 #include <util/delay.h>
 
-
+//	GPIO Init
+//	set PD6 as LED status
+//  set PD7 as config switch
 void GPIO_init(void){
 	//pulldown pd6, pull-up pd7
 	PORTD=(0<<PD6) | (1<<PD7);
@@ -19,7 +21,9 @@ void GPIO_init(void){
 }
 
 
-
+// Get config switch status
+// return 1 if config sw is pushed
+// 0 otherwise
 int GetResetSw(void){
 	int rc = 0;
 	int i;
@@ -28,8 +32,12 @@ int GetResetSw(void){
 			STATUS_TOGGLE();
 			_delay_ms(100);
 		}
-		if(RESET_SW_IS_PUSHED())
-		rc = 1;
+		if(RESET_SW_IS_PUSHED()){
+			rc = 1;
+			STATUS_ON();
+		}else{
+			STATUS_OFF();	
+		}
 	}
 	
 	return rc;
