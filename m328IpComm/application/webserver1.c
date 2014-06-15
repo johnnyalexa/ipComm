@@ -187,6 +187,7 @@ uint16_t print_webpage(uint8_t * buf)
 	uint16_t plen=0;
 	char buf2[200];
 	char buf3[200];
+	int srv_port = currentConfig.server_port;
 	
 	plen=http200ok(buf);
 	
@@ -242,7 +243,7 @@ uint16_t print_webpage(uint8_t * buf)
 	sprintf(buf3, buf2,"Server IP");
 	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_IP);
-	sprintf(buf3, buf2,otherside_www_ip[0],otherside_www_ip[1],otherside_www_ip[2],otherside_www_ip[3]);
+	sprintf(buf3, buf2,server_ip[0],server_ip[1],server_ip[2],server_ip[3]);
 	plen=fill_tcp_data(buf,plen,buf3);
 	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||		
 	// ---------------  Server Port  ----------------- //
@@ -251,7 +252,8 @@ uint16_t print_webpage(uint8_t * buf)
 	sprintf(buf3, buf2,"Server Port");
 	plen=fill_tcp_data(buf,plen,buf3);
 	strcpy_P(buf2,table_line_Port);
-	sprintf(buf3, buf2,"Server Port",MYTCPPORT);
+	//sprintf(buf3, buf2, MYTCPPORT);
+	sprintf(buf3, buf2, srv_port);
 	plen=fill_tcp_data(buf,plen,buf3);
 	plen=fill_tcp_data_p(buf,plen,table_tr_stop);			// </tr>	||
 	// ---------------  TABLE END  ------------------- //	

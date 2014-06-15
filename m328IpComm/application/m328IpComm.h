@@ -32,8 +32,9 @@ extern ipComm_config_t currentConfig;
 extern uint8_t netmask[4];
 extern uint8_t mymac[6];
 extern uint8_t gwmac[6];
-extern uint8_t otherside_www_ip[4];
-extern uint8_t otherside_www_gwmac[6];
+extern uint8_t server_ip[4];
+extern uint16_t otherside_port;
+extern uint8_t server_gwmac[6];
 // My own IP (DHCP will provide a value for it):
 extern uint8_t myip[4];
 // Default gateway (DHCP will provide a value for it):

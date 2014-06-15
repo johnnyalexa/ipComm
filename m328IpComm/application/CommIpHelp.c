@@ -9,29 +9,19 @@
 #include "../enc28j60_tcp_ip_stack/include/timeout.h"
 #include <avr/wdt.h>
 
-
+/* ***************************************************************** */
+//Default config to use if no other config exists
 ipComm_config_t defaultConfig={
-	.local_mac={0x00, 0x52,0x47,0x46,0x00,0x01},
+	.local_mac={0x00, 0x53,0x4C,0x46,0x00,0x01},
 	.server_ip={0,0,0,0},
 	.server_port=0,
 	.status=0	
 };
 
-/* ***************************************************************** */
-//Default config to use if no other config exists
-//                          x     S    L    F    x    x
-uint8_t default_mac[6] = {0x00, 0x52,0x47,0x46,0x01,0x01};
-uint8_t default_ip[4] = {192,168,0,30};
-/* ***************************************************************** */
-//
-// Please modify the following lines. mac and ip have to be unique
-// in your local area network. You can not have the same numbers in
-// two devices:       x     S    L    F    x   x
-uint8_t mymac[6] = {0x00, 0x52,0x47,0x46,0x10,0x27};
+   
+uint8_t mymac[6];
+uint8_t server_ip[4];
 
-
-//uint8_t otherside_www_ip[4]={192,168,0,100}; // dns will fill this
-uint8_t otherside_www_ip[4]={86,121,130,52}; // dns will fill this
 // My own IP (DHCP will provide a value for it):
 uint8_t myip[4]={0,0,0,0};
 // Default gateway (DHCP will provide a value for it):
@@ -39,8 +29,9 @@ uint8_t gwip[4]={0,0,0,0};
 #define TRANS_NUM_GWMAC 1
 uint8_t gwmac[6];
 #define TRANS_NUM_WEBMAC 2
-uint8_t otherside_www_gwmac[6];
+uint8_t server_gwmac[6];
 //static uint8_t otherside_www_gwmac[6]={0x78,0x92,0x9C,0x43,0x53,0x4A};
+	
 // Netmask (DHCP will provide a value for it):
 uint8_t netmask[4];
 char urlvarstr[32];	
@@ -67,7 +58,7 @@ void arpresolver_result_callback(uint8_t *ip __attribute__((unused)),uint8_t ref
 	}
 	if (reference_number==TRANS_NUM_WEBMAC){
 		// copy mac address over:
-		while(i<6){otherside_www_gwmac[i]=mac[i];i++;}
+		while(i<6){server_gwmac[i]=mac[i];i++;}
 	}
 }
 
@@ -96,7 +87,7 @@ uint16_t your_client_tcp_datafill_callback(uint8_t fd){
 void send_tcp_data(void){
 	uint8_t fd;
 	//get_mac_with_arp(otherside_www_ip,TRANS_NUM_WEBMAC,&arpresolver_result_callback);
-	fd=client_tcp_req(&your_client_tcp_result_callback,&your_client_tcp_datafill_callback,MYTCPPORT,otherside_www_ip,gwmac);
+	fd=client_tcp_req(&your_client_tcp_result_callback,&your_client_tcp_datafill_callback,MYTCPPORT,server_ip,gwmac);
 }
 
 void Ethernet_Init(void){

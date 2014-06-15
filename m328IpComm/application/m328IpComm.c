@@ -39,7 +39,8 @@ int main(void)
 	//Init specific controller peripherals
 	MCU_Init();
 	//ms
-	_delay_ms(1000);
+	SYS_LOG("MCU Reset\n");
+	_delay_ms(3000);
 	SYS_LOG("MCU Start\n");
 	
 	//NVM_GetCurrentPosition();
@@ -50,7 +51,9 @@ int main(void)
 		NVM_SaveConfig(&currentConfig);
 		SYS_LOG("Config default\n");
 	};
-		
+	memcpy(mymac,currentConfig.local_mac,sizeof(mymac));
+	memcpy(server_ip,currentConfig.server_ip,sizeof(server_ip));
+
 	SYS_LOG("Config loaded\n");
 	SYS_LOG("My mac=%02x:%02x:%02x:%02x:%02x:%02x\n",
 				currentConfig.local_mac[0],
@@ -59,6 +62,9 @@ int main(void)
 				currentConfig.local_mac[3],
 				currentConfig.local_mac[4],
 				currentConfig.local_mac[5])	;
+				
+				
+				
 	Ethernet_Init();	
 	Ethernet_Leds_Init();		
 	plen = Get_DHCP_Config();
