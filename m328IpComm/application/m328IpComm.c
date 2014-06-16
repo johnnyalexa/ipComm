@@ -80,7 +80,8 @@ int main(void)
 				currentConfig.server_ip[1],
 				currentConfig.server_ip[2],
 				currentConfig.server_ip[3],
-				currentConfig.server_port);		*/	
+				currentConfig.server_port);		
+				*/	
 				
 	Ethernet_Init();	
 	Ethernet_Leds_Init();		
@@ -103,7 +104,7 @@ int main(void)
 #endif
 	
 // config run type
-//if(run_type !=0){
+if(run_type !=0){
 	//init the ethernet/ip layer:
 	init_udp_or_www_server(currentConfig.local_mac,myip);
 	www_server_port(MYWWWPORT);
@@ -127,15 +128,6 @@ int main(void)
 		// of the tcp data if there is tcp data part
 		dat_p=packetloop_arp_icmp_tcp(buf,plen);
 		
-		//printf("plen=%d,dat_p=%d\n",plen,dat_p);
-		
-		
-		//if(0 == plen){ //we are idle, process some dns
-			// Clear buffer to have empty string on a new page
-			//clear_buf(); 
-			
-			//continue;
-		//}
 		
 
 #if 0
@@ -156,26 +148,10 @@ int main(void)
 
 		if(dat_p==0){
 			//udp_client_check_for_dns_answer(buf,plen);
-			continue; //go to while 1
+			//continue; //go to while 1
+			goto UDP;
 		}
 		
-			//strncpy(str,(char *)&(buf[dat_p]),sizeof(str));						
-			//printf("buf[%d]=%s\n",dat_p,(char *)&(buf[dat_p]));
-		
-		/*if (strncmp("GET ",(char *)&(buf[dat_p]),4)==0){
-			//We have a GET request
-			printf("GET\n");
-		}else
-		if (strncmp("POST",(char *)&(buf[dat_p]),4)==0){
-			//We have a POST request
-			printf("POST\n");
-		}else{
-			printf("OTHER\n");
-			gPlen=http200ok(buf);
-			gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>200 OK</h1>"));
-			goto SENDTCP;
-		}
-		*/
 		
 		
         if ((strncmp("GET ",(char *)&(buf[dat_p]),4)!=0)&&(strncmp("POST",(char *)&(buf[dat_p]),4)!=0)){
@@ -199,17 +175,6 @@ int main(void)
 			buf[dat_p+100]='\0'; //100
 		}
 		
-/*		
-	    if (strncmp("/favicon.ico",(char *)&(buf[dat_p+4]),12)==0){
-		   // favicon:
-		   gPlen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 301 Moved Permanently\r\nLocation: "));
-		   gPlen=fill_tcp_data_p(buf,gPlen,PSTR("http://tuxgraphics.org/ico/a.ico"));
-		   gPlen=fill_tcp_data_p(buf,gPlen,PSTR("\r\n\r\nContent-Type: text/html\r\n\r\n"));
-		   gPlen=fill_tcp_data_p(buf,gPlen,PSTR("<h1>301 Moved Permanently</h1>\n"));
-		   goto SENDTCP;
-	     }
-*/		
-
 		// start after the first slash:
 		cmd=analyse_get_url(buf,(char *)&(buf[dat_p+5]));
         
@@ -245,7 +210,7 @@ SENDTCP:
 	continue;					
 		
 		
-#if 0		
+#if 1		
 UDP:
 		// check if ip packets are for us:
 		if(eth_type_is_ip_and_my_ip(buf,plen)==0){
@@ -256,14 +221,40 @@ UDP:
 		if (buf[IP_PROTO_P] == IP_PROTO_UDP_V &&\
 		buf[UDP_DST_PORT_H_P] == (MYUDPPORT>>8) &&\
 		buf[UDP_DST_PORT_L_P] == (MYUDPPORT&0xff)) {
-			payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
-			// you must sent a string starting with v
+		uint16_t ip[4];
+		uint16_t port;
+		char str[40];	
+		int scanf_rc;
+		if (buf[UDP_DATA_P]=='*' ){
+			scanf_rc = sscanf(&buf[UDP_DATA_P],
+									"*%u.%u.%u.%u:%u",
+									&ip[0],
+									&ip[1],
+									&ip[2],
+									&ip[3],
+									&port
+									);
 			
-			SYS_LOG("Enter your response here:\n");
-			scanf("%s",str);
+			//	USART_Transmit(0x30+scanf_rc);
+			if(scanf_rc !=5){
+				strcpy(str,"Config error: Please use format *IP:port");	
+			}else{
+				uint16_t cfg_rc = ((ip[0]&0xFF00)|(ip[1]&0xFF00)|(ip[2]&0xFF00)|(ip[3]&0xFF00)|(!port));
+				if(cfg_rc!=0)
+					strcpy(str,"Config error: Incorrect IP or port");
+				else
+					strcpy(str,"Config OK!");
+			}
+		}
+			
+			//int payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
+			// you must sent a string starting with v
+			//char str[20];
+			//SYS_LOG("Enter your response here:\n");
+			//scanf("%s",str);
 		//	printf("%s",str);
 			//strcpy(str,"Sensolight! usage: ver");
-			make_udp_reply_from_request(buf,str,strnlen(str,35),MYUDPPORT);
+			make_udp_reply_from_request(buf,str,strnlen(str,40),MYUDPPORT);
 			
 		//	strcpy(str,&buf[UDP_DATA_P]);
 		//	USART_print(str);
@@ -272,10 +263,10 @@ UDP:
 #endif				
 		
     } // End of main loop
-//}else{
+}else{
 //Normal run tpe	
-//SYS_LOG("else\n");	
-//}
+SYS_LOG("else\n");	
+}
 	SYS_LOG("Reset AVR\n");
 // If we get here, we need to restart
 Reset_AVR();	
