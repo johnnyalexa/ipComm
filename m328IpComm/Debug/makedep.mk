@@ -6,6 +6,8 @@ application\CommIpHelp.c
 
 application\m328IpComm.c
 
+application\obsolete.c
+
 application\webpages.c
 
 application\webpage_help.c

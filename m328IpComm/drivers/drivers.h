@@ -43,6 +43,8 @@ void Init_Uart(void);
 void USART_Transmit(uint8_t data);
 uint8_t USART_Receive(uint8_t * data);
 void USART_print(char * text);
+unsigned char usart_kbhit(void);
+char usart_getchar(void);
 
 /* ******* NVM ***************** */
 uint8_t NVM_GetCurrentPosition(void);
