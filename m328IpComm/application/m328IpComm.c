@@ -51,7 +51,7 @@ int main(void)
 	MCU_Init();
 	//ms
 	SYS_LOG("MCU Reset\n");
-	_delay_ms(3000);
+	//_delay_ms(3000);
 	SYS_LOG("MCU Start\n");
 	
 	run_type = GetResetSw();
@@ -181,7 +181,7 @@ UDP:
 			SYS_LOG("at+\n command=%s",str);	
 			
 			if(str == strstr(str,"cur")){
-				strcpy(tmpstr,"Current server settings: %u.%u.%u.%u:%d");
+				strcpy(tmpstr,"Current server settings: %u.%u.%u.%u:%u");
 				sprintf(str, tmpstr,
 							currentConfig.server_ip[0],
 							currentConfig.server_ip[1],
@@ -192,7 +192,7 @@ UDP:
 			
 			if(str == strstr(str,"server:")){
 				scanf_rc = sscanf(&buf[UDP_DATA_P+9],
-							":%u.%u.%u.%u:%u",&ip[0],&ip[1],&ip[2],&ip[3],&port);
+							":%d.%d.%d.%d:%d",&ip[0],&ip[1],&ip[2],&ip[3],&port);
 			SYS_LOG("scanfrc=%d\n",scanf_rc);
 				if(scanf_rc !=5){
 					strcpy(str,"Format error. Please use: at+server:10.100.1.23:4600");
@@ -202,10 +202,14 @@ UDP:
 					strcpy(str,"Config error: Incorrect IP or port");
 					else{
 						strcpy(str,"Config OK!");
-						memcpy(currentConfig.server_ip,ip,sizeof(ip));
+						//memcpy(currentConfig.server_ip,ip,sizeof(ip));
+						currentConfig.server_ip[0]=(uint8_t)ip[0];
+						currentConfig.server_ip[1]=(uint8_t)ip[1];
+						currentConfig.server_ip[2]=(uint8_t)ip[2];
+						currentConfig.server_ip[3]=(uint8_t)ip[3];
 						currentConfig.server_port=port;
 						NVM_SaveConfig(&currentConfig);
-						if_reset = 1; //reset avr
+					//	if_reset = 1; //reset avr
 					}
 				}
 			}
@@ -234,6 +238,7 @@ void default_main(void){
 		
 	// Main loop of the program
 	while(1){
+		
 	// Gets a packet from the network receive buffer, if one is available.
 	// The packet will by headed by an ethernet header.
 	//      maxlen  The maximum acceptable length of a retrieved packet.
@@ -251,14 +256,22 @@ void default_main(void){
 
 	if(dat_p==0){
 		//udp_client_check_for_dns_answer(buf,plen);
-		continue; // if upd data, we are not interested
+		//continue; // if upd data, we are not interested
 	}
-	
-	if(uart_state_machine()>0){
+	int usm_rc=uart_state_machine();
+	if(usm_rc > 0){
 		int fd;
 		//send_tcp_data();
+		printf("send\n");
 		fd=client_tcp_req(&your_client_tcp_result_callback,&comunicator_tcp_datafill_callback,
 						currentConfig.server_port, currentConfig.server_ip ,gwmac);	
+	printf("send to:%u.%u.%u.%u:%u\n",
+	currentConfig.server_ip[0],
+	currentConfig.server_ip[1],
+	currentConfig.server_ip[2],
+	currentConfig.server_ip[3],
+	currentConfig.server_port );
+							
 	}else
 		continue;
 
@@ -269,19 +282,22 @@ SENDTCP:
 	} // End of main loop
 }
 
-	static uart_buff[40];
+	static char uart_buff[40];
 
 int uart_state_machine(void){
 	int rc = -1;
 	static uint8_t uart_sm=0;
 	static uint8_t uart_pos=0;
 
-	
 	if(usart_kbhit()){
 		uart_buff[uart_pos]=usart_getchar();
 		uart_pos++;
-		if(uart_buff[uart_pos-1] == 0x0A)
+		if((uart_buff[uart_pos-1] == 0x0A)||
+			(uart_buff[uart_pos-1] == 0x0D)){
+			uart_buff[uart_pos]=0;
 			rc = uart_pos;
+			uart_pos=0;
+			}
 	}
 		
 	return rc;	
@@ -291,5 +307,7 @@ int uart_state_machine(void){
 // Declare a callback function to be called in order to fill in the
 // request (tcp data sent to the server):
 uint16_t comunicator_tcp_datafill_callback(uint8_t fd){
-	return(fill_tcp_data_p(buf,0,uart_buff));
+	printf("%s\n\n",uart_buff);
+	return(fill_tcp_data(buf,0,uart_buff));
+	//return(fill_tcp_data_p(buf,0,PSTR("SUCCESS")));
 }

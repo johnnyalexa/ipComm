@@ -68,6 +68,7 @@ uint8_t your_client_tcp_result_callback(uint8_t fd, uint8_t statuscode,uint16_t 
 	// Do not close the tcp connection after sending the packet
 	uint8_t close_tcp_session = 0;
 	//statuscode=0 means the buffer has valid data
+	printf("received OK\n");
 	if(statuscode==0){
 	}
 	return(close_tcp_session);

@@ -132,10 +132,13 @@ uint8_t USART_Receive(uint8_t * data)
 *    Returns: data byte receiver through UART
 *------------------------------------------------------------*/
 char usart_getchar(void) {
+	char rc;
 	// Wait for incoming data
 	while (!(UCSR0A & (1<<RXC0)));
+	rc = UDR0;
+	usart_putchar(rc);
 	// Return the data
-	return UDR0;
+	return rc;
 }
 
 /*-------------------- usart_kbhit   -------------------------
