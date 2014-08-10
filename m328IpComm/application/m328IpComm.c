@@ -262,16 +262,16 @@ void default_main(void){
 	if(usm_rc > 0){
 		int fd;
 		//send_tcp_data();
-		printf("send\n");
+		//printf("send\n");
 		fd=client_tcp_req(&your_client_tcp_result_callback,&comunicator_tcp_datafill_callback,
 						currentConfig.server_port, currentConfig.server_ip ,gwmac);	
-	printf("send to:%u.%u.%u.%u:%u\n",
+	/*printf("send to:%u.%u.%u.%u:%u\n",
 	currentConfig.server_ip[0],
 	currentConfig.server_ip[1],
 	currentConfig.server_ip[2],
 	currentConfig.server_ip[3],
 	currentConfig.server_port );
-							
+	*/						
 	}else
 		continue;
 
@@ -307,7 +307,7 @@ int uart_state_machine(void){
 // Declare a callback function to be called in order to fill in the
 // request (tcp data sent to the server):
 uint16_t comunicator_tcp_datafill_callback(uint8_t fd){
-	printf("%s\n\n",uart_buff);
+	//printf("%s\n\n",uart_buff);
 	return(fill_tcp_data(buf,0,uart_buff));
 	//return(fill_tcp_data_p(buf,0,PSTR("SUCCESS")));
 }
