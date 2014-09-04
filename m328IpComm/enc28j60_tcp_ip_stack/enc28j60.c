@@ -15,7 +15,7 @@
 #include <avr/io.h>
 //will include ip_config.h for the selected application
 #include "../application/ip_config.h"
-
+#include "../drivers/drivers.h"
 #include "include/enc28j60.h"
 //
 #define F_CPU 12500000UL  // 12.5 MHz
@@ -47,37 +47,43 @@ static int16_t gNextPacketPtr;
 // set CS to 1 = passive
 #define CSPASSIVE ENC28J60_CONTROL_PORT|=(1<<ENC28J60_CONTROL_CS)
 //
-#define waitspi() while(!(SPSR&(1<<SPIF)))
+//#define waitspi() while(!(SPSR&(1<<SPIF)))
 
 uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
 {
         CSACTIVE;
         // issue read command
-        SPDR = op | (address & ADDR_MASK);
-        waitspi();
+        SPI_Write(op | (address & ADDR_MASK));
+			// SPDR = op | (address & ADDR_MASK);
+			// waitspi();
         // read data
-        SPDR = 0x00;
-        waitspi();
+		SPI_DummyRead();
+			//SPDR = 0x00;
+			//waitspi();
         // do dummy read if needed (for mac and mii, see datasheet page 29)
         if(address & 0x80)
         {
-                SPDR = 0x00;
-                waitspi();
+			SPI_DummyRead();
+                //SPDR = 0x00;
+                //waitspi();
         }
         // release CS
         CSPASSIVE;
-        return(SPDR);
+        //return(SPDR);
+		return SPI_Read();
 }
 
 void enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data)
 {
         CSACTIVE;
         // issue write command
-        SPDR = op | (address & ADDR_MASK);
-        waitspi();
+		SPI_Write(op | (address & ADDR_MASK));	
+			//SPDR = op | (address & ADDR_MASK);
+			//waitspi();
         // write data
-        SPDR = data;
-        waitspi();
+		SPI_Write(data);
+			//SPDR = data;
+			//waitspi();
         CSPASSIVE;
 }
 
@@ -85,15 +91,18 @@ void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
 {
         CSACTIVE;
         // issue read command
-        SPDR = ENC28J60_READ_BUF_MEM;
-        waitspi();
+		SPI_Write(ENC28J60_READ_BUF_MEM);	
+			//SPDR = ENC28J60_READ_BUF_MEM;
+			//waitspi();
         while(len)
         {
                 len--;
                 // read data
-                SPDR = 0x00;
-                waitspi();
-                *data = SPDR;
+				SPI_DummyRead();
+				*data = SPI_Read();
+					//SPDR = 0x00;
+					//waitspi();
+					//*data = SPDR;
                 data++;
         }
         *data='\0';
@@ -104,15 +113,17 @@ void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
 {
         CSACTIVE;
         // issue write command
-        SPDR = ENC28J60_WRITE_BUF_MEM;
-        waitspi();
+		SPI_Write(ENC28J60_WRITE_BUF_MEM);
+			//SPDR = ENC28J60_WRITE_BUF_MEM;
+			//waitspi();
         while(len)
         {
                 len--;
                 // write data
-                SPDR = *data;
+				SPI_Write(*data);
+					//SPDR = *data;
                 data++;
-                waitspi();
+					//waitspi();
         }
         CSPASSIVE;
 }

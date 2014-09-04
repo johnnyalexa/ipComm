@@ -22,6 +22,7 @@
 #define SYS_LOG(...)	{}
 #endif //USE_LOGGING
 
+#define waitspi() while(!(SPSR&(1<<SPIF)))
 
 
 typedef struct ipComm_config{
@@ -66,5 +67,10 @@ void NVM_SaveConfig(ipComm_config_t *data);
 
 void GPIO_init(void);
 int GetResetSw(void);
+
+/********* SPI **********/
+void SPI_Write(uint8_t data);
+uint8_t SPI_Read(void);
+void SPI_DummyRead(void);
 
 #endif /* DRIVERS_H_ */
